@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, Animated, Easing, ActivityIndicator } fr
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './navigationTypes';
 
-type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GoalFormation'>;
+type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Loading'>;
 
 type Props = {
   navigation: LoadingScreenNavigationProp;
@@ -65,17 +65,17 @@ const LoadingScreen = ({ navigation }: Props) => {
         />
         {!imageLoaded && (
           <View style={[StyleSheet.absoluteFill, styles.loadingPlaceholder]}>
-            <ActivityIndicator size={24} color="#4CAF50" />
+            <ActivityIndicator size="large" color="#4CAF50" />
           </View>
         )}
       </View>
       
-      <Text style={styles.text_subtitle}>Большие результаты начинаются 
+      <Text style={styles.text}>Большие результаты начинаются 
       с маленьких целей</Text>
       
       {isLoading && (
         <View style={styles.loadingIndicator}>
-          <ActivityIndicator size={12} color="#4CAF50" />
+          <ActivityIndicator size="small" color="#4CAF50" />
         </View>
       )}
     </View>
@@ -88,37 +88,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#ECE9E4',
-    fontFamily: 'Lora',
-
+    backgroundColor: '#fff',
   },
   text: {
-    fontSize: 30,
+    fontSize: 18,
     marginVertical: 20,
     textAlign: 'center',
     color: '#333',
-    fontFamily: 'Lora-Bold',
-
   },
   imageContainer: {
-    width: 300,
-    height: 400,
+    width: 200,
+    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 20,
   },
   image: {
-    width: '180%',
-    height: '180%',
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
-  },
-  text_subtitle: {
-    fontSize: 18,
-    marginVertical: 20,
-    textAlign: 'center',
-    color: '#333',
-    fontFamily: 'Lora',
-
   },
   loadingPlaceholder: {
     justifyContent: 'center',

@@ -12,37 +12,27 @@ const RestrictionsScreen = () => {
   const navigation = useNavigation<RestrictionsScreenNavigationProp>();
 
   const options = [
-    { id: 1, text: "Нет ограничений" },
-    { id: 2, text: "Боли в спине" },
-    { id: 3, text: "Проблемы с коленями" },
-    { id: 4, text: "Чувствительность в суставах" },
-    { id: 5, text: "Беременность " },
-    { id: 6, text: "Послеродовое состояние" }
+    { id: 1, text: "Травмы коленей" },
+    { id: 2, text: "Проблемы с позвоночником" },
+    { id: 3, text: "Травмы плеч" },
+    { id: 4, text: "Травмы запястий" },
+    { id: 5, text: "Гипертония" },
+    { id: 6, text: "Нет ограничений" }
   ];
 
   const handleOptionToggle = (id: number) => {
-    if (id === 1) { // "Нет ограничений"
-      if (selectedOptions.includes(1)) {
-        setSelectedOptions([]);
-      } else {
-        setSelectedOptions([1]);
-      }
+    if (id === 6) {
+      // Если выбрано "Нет ограничений", снимаем все остальные выборы
+      setSelectedOptions([6]);
     } else {
-      if (selectedOptions.includes(1)) {
-        setSelectedOptions([id]);
-      } else {
-        setSelectedOptions(prev => 
-          prev.includes(id) ? prev.filter(option => option !== id) : [...prev, id]
-        );
-      }
+      // Если выбрано что-то другое, убираем "Нет ограничений" из выбора
+      setSelectedOptions(prev => {
+        const filtered = prev.filter(option => option !== 6);
+        return prev.includes(id) 
+          ? filtered.filter(option => option !== id) 
+          : [...filtered, id];
+      });
     }
-  };
-
-  const isOptionDisabled = (id: number) => {
-    if (selectedOptions.includes(1)) {
-      return id !== 1;
-    }
-    return false;
   };
 
   const handleContinue = () => {
@@ -52,15 +42,16 @@ const RestrictionsScreen = () => {
   };
 
   return (
-    <View style={styles.container}>      
+    <View style={styles.container}>
+      <Text style={styles.title}>Ограничения</Text>
+      
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.completedProgressBar]} />
-        <View style={[styles.progressBar, styles.activeProgressBar]} />
         <View style={[styles.progressBar, styles.completedProgressBar]} />
+        <View style={[styles.progressBar, styles.inactiveProgressBar]} />
       </View>
       
-      <Text style={styles.questionText}>У вас есть физические 
-      ограничения?</Text>
+      <Text style={styles.questionText}>Есть ли у вас какие-либо ограничения для занятий?</Text>
       
       <View style={styles.optionsContainer}>
         {options.map((option) => (
@@ -68,22 +59,17 @@ const RestrictionsScreen = () => {
             key={option.id}
             style={[
               styles.optionButton,
-              selectedOptions.includes(option.id) && styles.selectedOptionButton,
-              isOptionDisabled(option.id) && styles.disabledOptionButton
+              selectedOptions.includes(option.id) && styles.selectedOptionButton
             ]}
             onPress={() => handleOptionToggle(option.id)}
             activeOpacity={0.7}
-            disabled={isOptionDisabled(option.id)}
           >
-            <Text style={[
-              styles.optionText,
-              isOptionDisabled(option.id) && styles.disabledOptionText
-            ]}>{option.text}</Text>
             <Checkbox
               value={selectedOptions.includes(option.id)}
               onValueChange={() => handleOptionToggle(option.id)}
-              color={selectedOptions.includes(option.id) ? '#4CAF50' : '#519076'}
+              color={selectedOptions.includes(option.id) ? '#4CAF50' : undefined}
             />
+            <Text style={styles.optionText}>{option.text}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -106,90 +92,67 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#ECE9E4',
-    justifyContent: 'space-between',
-    fontFamily: 'Lora',
-
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    fontFamily: 'Lora-Bold',
-
   },
   progressContainer: {
     flexDirection: 'row',
-    marginBottom: 5,
+    justifyContent: 'space-between',
+    marginBottom: 30,
   },
   progressBar: {
-    flex: 1,
     height: 4,
-    backgroundColor: '#E0E0E0',
+    flex: 1,
     marginHorizontal: 2,
-    borderRadius: 2,
-  },
-  activeProgressBar: {
-    backgroundColor: '#4CAF50',
   },
   completedProgressBar: {
-    backgroundColor: '#ACACAC', 
+    backgroundColor: '#4CAF50',
+  },
+  inactiveProgressBar: {
+    backgroundColor: '#E0E0E0',
   },
   questionText: {
-    fontSize: 24,
+    fontSize: 18,
+    marginBottom: 20,
     textAlign: 'center',
-    color: '#333',
-    marginTop: 40,
-    fontFamily: 'Lora-Bold',
-
   },
   optionsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
   },
   optionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     padding: 15,
     marginBottom: 10,
     borderRadius: 8,
     backgroundColor: '#F5F5F5',
   },
   selectedOptionButton: {
-    backgroundColor: '#87D0B2',
-  },
-  disabledOptionButton: {
-    backgroundColor: '#F5F5F5',
-    opacity: 0.5,
+    backgroundColor: '#E8F5E9',
   },
   optionText: {
-    fontFamily: 'Lora',
-
+    flex: 1,
     fontSize: 16,
-  },
-  disabledOptionText: {
-    color: '#999',
-    fontFamily: 'Lora',
-
+    marginLeft: 10,
   },
   continueButton: {
-    backgroundColor: '#4D4D4D',
+    backgroundColor: '#4CAF50',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 20,
   },
   disabledContinueButton: {
-    backgroundColor: '#4D4D4D',
+    backgroundColor: '#E0E0E0',
   },
   continueButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Lora',
-
   },
 });
 

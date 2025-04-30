@@ -17,58 +17,53 @@ const FlexibilityScreen = () => {
       id: 1,
       text: "Легко выполняю большинство асан",
       card: {
-        text: "Молодец! Ваши успехи вдохновляют других!"
+        text: "Молодец! Ваши успехи вдохновляют других!",
+        letter: "a"
       }
     },
     {
       id: 2,
       text: "Хорошая гибкость",
       card: {
-        text: "Отлично! Вы на правильном пути к еще большей гибкости!"
+        text: "Отлично! Вы на правильном пути к еще большей гибкости!",
+        letter: "b"
       }
     },
     {
       id: 3,
       text: "Могу выполнять некоторые асаны",
       card: {
-        text: "Очень хорошо! Каждый шаг к улучшению — это успех!"
+        text: "Очень хорошо! Каждый шаг к улучшению — это успех!",
+        letter: "c"
       }
     },
     {
       id: 4,
       text: "Есть трудности с гибкостью",
       card: {
-        text: "Не повод отчаиваться! Начните с малого, и вы удивитесь своим достижениям!"
+        text: "Не повод отчаиваться! Начните с малого, и вы удивитесь своим достижениям!",
+        letter: "d"
       }
     },
     {
       id: 5,
       text: "Никогда не проверял(а) свою гибкость",
       card: {
-        text: "Давайте вместе проверим вашу гибкость и начнем путь к улучшению!"
+        text: "Давайте вместе проверим вашу гибкость и начнем путь к улучшению!",
+        letter: "e"
       }
     }
   ];
 
   const handleSelect = (id: number) => {
-    if (selectedOption === id) {
-      Animated.timing(cardAnimation, {
-        toValue: 0,
-        duration: 200,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true
-      }).start(() => {
-        setSelectedOption(null);
-      });
-    } else {
-      setSelectedOption(id);
-      Animated.timing(cardAnimation, {
-        toValue: 1,
-        duration: 500,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true
-      }).start();
-    }
+    setSelectedOption(id);
+    cardAnimation.setValue(0);
+    Animated.timing(cardAnimation, {
+      toValue: 1,
+      duration: 500,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: true
+    }).start();
   };
 
   const cardOpacity = cardAnimation.interpolate({
@@ -78,7 +73,7 @@ const FlexibilityScreen = () => {
 
   const cardTranslateY = cardAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: [10, 0]
+    outputRange: [20, 0]
   });
 
   const handleContinue = () => {
@@ -89,15 +84,15 @@ const FlexibilityScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Индикатор прогресса (3 полоски, активна третья) */}
+      <Text style={styles.title}>Гибкость</Text>
+      
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.completedProgressBar]} />
-        <View style={[styles.progressBar, styles.activeProgressBar]} />
         <View style={[styles.progressBar, styles.completedProgressBar]} />
+        <View style={[styles.progressBar, styles.inactiveProgressBar]} />
       </View>
       
-      <Text style={styles.questionText}>Как вы оцениваете 
-      свою гибкость?</Text>
+      <Text style={styles.questionText}>Оцените свою гибкость:</Text>
       
       <View style={styles.optionsContainer}>
         {options.map((option) => (
@@ -110,6 +105,11 @@ const FlexibilityScreen = () => {
               onPress={() => handleSelect(option.id)}
               activeOpacity={0.7}
             >
+              <Checkbox
+                value={selectedOption === option.id}
+                onValueChange={() => handleSelect(option.id)}
+                color={selectedOption === option.id ? '#4CAF50' : undefined}
+              />
               <Text style={[
                 styles.optionText,
                 selectedOption === option.id && styles.selectedOptionText
@@ -126,6 +126,7 @@ const FlexibilityScreen = () => {
                   transform: [{ translateY: cardTranslateY }]
                 }
               ]}>
+                <Text style={styles.cardLetter}>{option.card.letter})</Text>
                 <Text style={styles.cardText}>{option.card.text}</Text>
               </Animated.View>
             )}
@@ -133,18 +134,16 @@ const FlexibilityScreen = () => {
         ))}
       </View>
       
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[
-            styles.continueButton,
-            !selectedOption && styles.disabledContinueButton
-          ]}
-          onPress={handleContinue}
-          disabled={!selectedOption}
-        >
-          <Text style={styles.continueButtonText}>Продолжить</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={[
+          styles.continueButton,
+          !selectedOption && styles.disabledContinueButton
+        ]}
+        onPress={handleContinue}
+        disabled={!selectedOption}
+      >
+        <Text style={styles.continueButtonText}>Продолжить</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -153,96 +152,86 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#ECE9E4',
-    fontFamily: 'Lora',
-
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
+    fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
     color: '#333',
-    fontFamily: 'Lora-Bold',
-
   },
   progressContainer: {
     flexDirection: 'row',
-    marginBottom: 60,
+    justifyContent: 'center',
+    marginBottom: 30,
   },
   progressBar: {
-    flex: 1,
     height: 4,
-    backgroundColor: '#E0E0E0',
-    marginHorizontal: 2,
+    width: 60,
+    marginHorizontal: 5,
     borderRadius: 2,
   },
   completedProgressBar: {
-    backgroundColor: '#ACACAC',
-  },
-  activeProgressBar: {
     backgroundColor: '#4CAF50',
   },
+  inactiveProgressBar: {
+    backgroundColor: '#E0E0E0',
+  },
   questionText: {
-    fontSize: 24,
+    fontSize: 18,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
     color: '#333',
-    fontWeight: '600',
-    fontFamily: 'Lora',
-
   },
   optionsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginTop: -50,
+    marginBottom: 20,
   },
   optionWrapper: {
-    marginBottom: 1,
+    marginBottom: 10,
   },
   optionButton: {
-    padding: 15,
-    borderWidth: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderWidth: 1,
     borderColor: '#E0E0E0',
     borderRadius: 8,
     backgroundColor: '#FAFAFA',
-    marginBottom: 1,
   },
   selectedOptionButton: {
-    borderColor: '#87D0B2',
+    borderColor: '#4CAF50',
     backgroundColor: '#E8F5E9',
-    borderWidth: 2,
   },
   optionText: {
     fontSize: 16,
     color: '#333',
-    textAlign: 'left',
-    fontWeight: '500',
-    paddingLeft: 15,
-    fontFamily: 'Lora',
-
+    flex: 1,
+    marginLeft: 10,
   },
   selectedOptionText: {
     color: '#2E7D32',
-    fontWeight: '600',
-    fontFamily: 'Lora',
-
   },
   card: {
-    backgroundColor: '#FAE596',
+    backgroundColor: '#F5F5F5',
     padding: 15,
     borderRadius: 8,
     marginTop: 5,
     borderLeftWidth: 3,
-    borderLeftColor: '#87D0B2',
+    borderLeftColor: '#4CAF50',
+    flexDirection: 'row',
+  },
+  cardLetter: {
+    fontWeight: 'bold',
+    marginRight: 10,
+    color: '#4CAF50',
   },
   cardText: {
+    flex: 1,
     color: '#333',
-    fontSize: 16,
-    fontFamily: 'Lora',
-
   },
   continueButton: {
-    backgroundColor: '#4D4D4D',
+    backgroundColor: '#4CAF50',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
@@ -254,12 +243,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Lora',
-
-  },
-  buttonContainer: {
-    marginTop: 'auto',
-    marginBottom: 20,
   },
 });
 

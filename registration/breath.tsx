@@ -12,9 +12,9 @@ const BreathScreen = () => {
   const navigation = useNavigation<BreathScreenNavigationProp>();
 
   const options = [
-    { id: 1, text: "Я хорошо контролирую свое дыхание и использую техники дыхания в практике" },
-    { id: 2, text: "Я иногда теряю контроль над дыханием, особенно во время интенсивных упражнений" },
-    { id: 3, text: "Я не умею контролировать дыхание и хотел(а) бы научиться" }
+    { id: 1, text: "Регулярно практикую дыхательные упражнения" },
+    { id: 2, text: "Иногда делаю дыхательные практики" },
+    { id: 3, text: "Не занимаюсь дыхательными практиками" }
   ];
 
   const handleContinue = () => {
@@ -24,15 +24,17 @@ const BreathScreen = () => {
   };
 
   return (
-    <View style={styles.container}>      
+    <View style={styles.container}>
+      <Text style={styles.title}>Дыхание</Text>
+      
       {/* Прогресс-бар (2/3) */}
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.completedProgressBar]} />
-        <View style={[styles.progressBar, styles.activeProgressBar]} />
         <View style={[styles.progressBar, styles.completedProgressBar]} />
+        <View style={[styles.progressBar, styles.inactiveProgressBar]} />
       </View>
       
-      <Text style={styles.questionText}>Как ваше управление дыханием?</Text>
+      <Text style={styles.questionText}>Как часто вы практикуете дыхательные упражнения?</Text>
       
       <View style={styles.optionsContainer}>
         {options.map((option) => (
@@ -45,6 +47,11 @@ const BreathScreen = () => {
             onPress={() => setSelectedOption(option.id)}
             activeOpacity={0.7}
           >
+            <Checkbox
+              value={selectedOption === option.id}
+              onValueChange={() => setSelectedOption(option.id)}
+              color={selectedOption === option.id ? '#4CAF50' : undefined}
+            />
             <Text style={styles.optionText}>{option.text}</Text>
           </TouchableOpacity>
         ))}
@@ -68,78 +75,67 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#ECE9E4',
-    justifyContent: 'space-between',
-    fontFamily: 'Lora',
-
+    backgroundColor: '#fff',
   },
-
   title: {
     fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333',
-    fontFamily: 'Lora-Bold',
-
   },
   progressContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 30,
   },
   progressBar: {
-    flex: 1,
     height: 4,
-    backgroundColor: '#E0E0E0',
+    flex: 1,
     marginHorizontal: 2,
-    borderRadius: 2,
-  },
-  activeProgressBar: {
-    backgroundColor: '#4CAF50',
   },
   completedProgressBar: {
-    backgroundColor: '#ACACAC', 
+    backgroundColor: '#4CAF50',
+  },
+  inactiveProgressBar: {
+    backgroundColor: '#E0E0E0',
   },
   questionText: {
-    fontSize: 28,
+    fontSize: 18,
+    marginBottom: 20,
     textAlign: 'center',
-    marginTop: 40,
-    fontFamily: 'Lora-Bold',
-
   },
   optionsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
   },
   optionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 15,
     marginBottom: 10,
     borderRadius: 8,
     backgroundColor: '#F5F5F5',
   },
   selectedOptionButton: {
-    backgroundColor: '#87D0B2',
+    backgroundColor: '#E8F5E9',
   },
   optionText: {
+    flex: 1,
     fontSize: 16,
-    fontFamily: 'Lora',
-
+    marginLeft: 10,
   },
   continueButton: {
-    backgroundColor: '#4D4D4D',
+    backgroundColor: '#4CAF50',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
   },
   disabledContinueButton: {
-    backgroundColor: '#4D4D4D',
+    backgroundColor: '#E0E0E0',
   },
   continueButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Lora',
-
   },
 });
 
