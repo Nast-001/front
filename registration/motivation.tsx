@@ -1,5 +1,3 @@
-// MotivationScreen.tsx
-
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Checkbox } from 'expo-checkbox';
@@ -19,25 +17,33 @@ const MotivationScreen = ({ navigation, route }: Props) => {
   const [selectedMotivations, setSelectedMotivations] = useState<string[]>([]);
 
   const motivations = [
-    "Хочу улучшить здоровье",
-    "Хочу лучше выглядеть",
-    "Хочу повысить уверенность в себе",
-    "Хочу больше энергии",
-    "Хочу справиться со стрессом",
-    "Хочу пример для близких"
+    "Оставаться здоровым",
+    "Иметь лучшую гибкость",
+    "Снижать уровень стресса",
+    "Внутреннее спокойствие",
+    "Развивать силу",
+    "Изучать новые техники"
   ];
 
   const toggleMotivation = (motivation: string) => {
     setSelectedMotivations(prev => 
       prev.includes(motivation) 
-        ? prev.filter(item => item !== motivation)
+        ? prev.filter(item => item !== motivation) 
         : [...prev, motivation]
     );
   };
 
+  const handleContinue = () => {
+    if (selectedMotivations.length > 0) {
+      navigation.navigate('Loading', {
+        selectedGoals: route.params?.selectedGoals || [],
+        selectedMotivations: selectedMotivations
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Индикатор прогресса (3 полоски, активна третья) */}
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.completedProgressBar]} />
         <View style={[styles.progressBar, styles.completedProgressBar]} />
@@ -47,27 +53,35 @@ const MotivationScreen = ({ navigation, route }: Props) => {
       <Text style={styles.title}>Что вас мотивирует?</Text>
       <Text style={styles.subtitle}>Выберите то, что важно для вас</Text>
 
-      {/* Чекбоксы мотивации */}
-      {motivations.map((motivation, index) => (
-        <View key={index} style={styles.checkboxWrapper}>
-          <Checkbox
-            value={selectedMotivations.includes(motivation)}
-            onValueChange={() => toggleMotivation(motivation)}
-            color={selectedMotivations.includes(motivation) ? '#007AFF' : undefined}
-            style={styles.checkbox}
-          />
-          <Text style={styles.checkboxLabel}>{motivation}</Text>
-        </View>
-      ))}
+      <View style={styles.motivationsContainer}>
+        {motivations.map((motivation, index) => (
+          <View key={index} style={[
+            styles.checkboxWrapper,
+            selectedMotivations.includes(motivation) && styles.selectedWrapper
+          ]}>
+            <TouchableOpacity
+              style={styles.touchableArea}
+              onPress={() => toggleMotivation(motivation)}
+            >
+              <Checkbox
+                value={selectedMotivations.includes(motivation)}
+                onValueChange={() => toggleMotivation(motivation)}
+                color={selectedMotivations.includes(motivation) ? '#007AFF' : '#519076'}
+                style={styles.checkbox}
+              />
+              <Text style={styles.checkboxLabel}>{motivation}</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
 
-      {/* Кнопка продолжения */}
       <TouchableOpacity
         style={[
           styles.button,
-          selectedMotivations.length === 0 && styles.disabledButton,
+          selectedMotivations.length === 0 && styles.disabledButton
         ]}
+        onPress={handleContinue}
         disabled={selectedMotivations.length === 0}
-        onPress={() => navigation.navigate('Loading')}
       >
         <Text style={styles.buttonText}>Продолжить</Text>
       </TouchableOpacity>
@@ -79,11 +93,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#ECE9E4',
   },
   progressContainer: {
     flexDirection: 'row',
-    marginBottom: 30,
+    marginBottom: 40,
+    paddingHorizontal: 20,
   },
   progressBar: {
     flex: 1,
@@ -93,53 +108,76 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   activeProgressBar: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#519076',
   },
   completedProgressBar: {
-    backgroundColor: '#4CAF50', // Зеленый для завершенных этапов
+    backgroundColor: '#ACACAC',
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
+    marginTop: 20,
   },
   subtitle: {
     fontSize: 16,
     color: '#666',
-    marginBottom: 30,
+    marginBottom: 10,
     textAlign: 'center',
+  },
+  motivationsContainer: {
+    flex: 1,
+    marginBottom: 20,
+    justifyContent: 'center',
   },
   checkboxWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    padding: 15,
+    backgroundColor: '#F7F7F7',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+  },
+  selectedWrapper: {
+    backgroundColor: '#87D0B2',
+    borderColor: '#519076',
   },
   checkbox: {
-    marginRight: 8,
-    width: 24,
-    height: 24,
+    marginRight: 12,
   },
   checkboxLabel: {
     fontSize: 16,
-    marginLeft: 8,
     flex: 1,
+    color: '#000',
+  },
+  selectedLabel: {
+    color: '#000',
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4D4D4D',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
+    marginBottom: 20,
   },
   disabledButton: {
-    backgroundColor: '#B3E0FF',
+    opacity: 0.5,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
+  touchableArea: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
 });
+
 
 export default MotivationScreen;

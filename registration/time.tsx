@@ -1,76 +1,24 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { saveUserData } from './api/auth';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './navigationTypes';
+import { useNavigation } from '@react-navigation/native';
 
 type TimeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Time'>;
-type TimeScreenRouteProp = RouteProp<RootStackParamList, 'Time'>;
 
 const TimeScreen = () => {
-  const [selectedTime, setSelectedTime] = useState<'short' | 'medium' | 'long' | ''>('');
-  const [loading, setLoading] = useState(false);
-  
+  const [selectedTime, setSelectedTime] = useState<string>('');
   const navigation = useNavigation<TimeScreenNavigationProp>();
-  const route = useRoute<TimeScreenRouteProp>();
-  
-  const formData = route.params?.formData || { email: '', password: '', password2: '' };
-  const gender = route.params?.gender;
-  const name = route.params?.name;
-  const age = route.params?.age;
-  const height = route.params?.height;
-  const weight = route.params?.weight;
 
   const timeOptions = [
-    { label: '10 мин', value: 'short' as const },
-    { label: '20-30 мин', value: 'medium' as const },
-    { label: '30+ мин', value: 'long' as const },
+    { label: '10 мин', value: '10' },
+    { label: '20-30 мин', value: '20-30' },
+    { label: '30+ мин', value: '30+' },
   ];
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (selectedTime) {
-      try {
-        setLoading(true);
-        
-        // Подготавливаем данные для сохранения локально
-        if (!name) {
-          Alert.alert('Ошибка', 'Имя пользователя обязательно');
-          return;
-        }
-
-        const userData = {
-          email: formData.email,
-          password: formData.password,
-          password2: formData.password2,
-          name: name,
-          gender: gender,
-          age: age && !isNaN(Number(age)) ? parseInt(age) : undefined,
-          height: height && !isNaN(Number(height)) ? parseInt(height) : undefined,
-          weight: weight && !isNaN(Number(weight)) ? parseInt(weight) : undefined,
-          workout_duration: selectedTime,
-          // Другие поля будут добавлены позже
-        };
-        
-        // Сохраняем данные пользователя локально
-        await saveUserData(userData);
-        
-        // Переходим на следующий экран без отправки данных на сервер
-        navigation.navigate('GoalFormation', {
-          ...formData,
-          gender,
-          name,
-          age,
-          height,
-          weight,
-          workout_duration: selectedTime
-        });
-      } catch (error: any) {
-        console.error('Ошибка при сохранении данных:', error);
-        Alert.alert('Ошибка', 'Произошла ошибка при сохранении данных. Пожалуйста, попробуйте еще раз.');
-      } finally {
-        setLoading(false);
-      }
+      navigation.navigate('GoalFormation');
     }
   };
 
@@ -111,16 +59,12 @@ const TimeScreen = () => {
         <TouchableOpacity
           style={[
             styles.continueButton,
-            (!selectedTime || loading) && styles.disabledContinueButton,
+            !selectedTime && styles.disabledContinueButton,
           ]}
           onPress={handleContinue}
-          disabled={!selectedTime || loading}
+          disabled={!selectedTime}
         >
-          {loading ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.continueButtonText}>Продолжить</Text>
-          )}
+          <Text style={styles.continueButtonText}>Продолжить</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -131,8 +75,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ECE9E4',
-    fontFamily: 'Lora',
-
   },
   progressContainer: {
     flexDirection: 'row',
@@ -158,13 +100,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
+    fontWeight: 'bold',
     color: '#333',
     textAlign: 'center',
     marginTop: 40,
     marginBottom: 40,
     lineHeight: 32,
-    fontFamily: 'Lora-Bold',
-
   },
   optionsContainer: {
     marginTop: 40,
@@ -186,14 +127,10 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'left',
     paddingLeft: 10,
-    fontFamily: 'Lora',
-
   },
   selectedOptionText: {
     color: '#FFFFFF',
     fontWeight: '500',
-    fontFamily: 'Lora',
-
   },
   continueButton: {
     backgroundColor: '#4D4D4D',
@@ -209,8 +146,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Lora',
-
   },
 });
 

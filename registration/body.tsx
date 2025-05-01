@@ -2,7 +2,7 @@ import { Checkbox } from 'expo-checkbox';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
 type BodyAreasNavigationProp = StackNavigationProp<RootStackParamList, 'BodyAreas'>;
@@ -16,22 +16,38 @@ const BodyAreasScreen = ({ navigation }: Props) => {
   const [secondaryAreas, setSecondaryAreas] = useState<string[]>([]);
 
   const bodyAreas = [
-    "Руки", "Ноги", "Спина", "Грудь", "Плечи", "Пресс", "Ягодицы"
+    "Всё тело", "Шея и плечи", "Руки и грудь", "Спина", "Пресс и кор", "Ягодицы и Бедра", "Ноги и голени"
   ];
-
   const togglePrimaryArea = (area: string) => {
-    setPrimaryArea(prev => prev === area ? null : area);
-    setSecondaryAreas([]);
+    if (area === "Всё тело") {
+      setPrimaryArea(prev => prev === area ? null : area);
+      setSecondaryAreas([]);
+    } else {
+      setPrimaryArea(prev => prev === area ? null : area);
+      setSecondaryAreas([]);
+    }
+  };
+  
+  const toggleSecondaryArea = (area: string) => {
+    if (primaryArea === "Всё тело") return;
+    
+    if (area === "Всё тело") {
+      setPrimaryArea("Всё тело");
+      setSecondaryAreas([]);
+    } else {
+      setSecondaryAreas(prev => 
+        prev.includes(area) 
+          ? prev.filter(item => item !== area) 
+          : [...prev, area]
+      );
+    }
   };
 
-  const toggleSecondaryArea = (area: string) => {
-    if (primaryArea) return;
-    
-    setSecondaryAreas(prev => 
-      prev.includes(area) 
-        ? prev.filter(item => item !== area) 
-        : [...prev, area]
-    );
+  const isAreaDisabled = (area: string) => {
+    if (primaryArea === "Всё тело") {
+      return area !== "Всё тело";
+    }
+    return false;
   };
 
   const handleContinue = () => {
@@ -49,7 +65,7 @@ const BodyAreasScreen = ({ navigation }: Props) => {
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.completedProgressBar]} />
         <View style={[styles.progressBar, styles.activeProgressBar]} />
-        <View style={styles.progressBar} />
+        <View style={[styles.progressBar, styles.completedProgressBar]} />
       </View>
 
       <Text style={styles.title}>Какие области тела хотите проработать?</Text>
@@ -61,23 +77,39 @@ const BodyAreasScreen = ({ navigation }: Props) => {
             : "Выберите зоны для работы"}
       </Text>
 
-      <View style={styles.checkboxContainer}>
-        {bodyAreas.map((area, index) => (
-          <View key={index} style={styles.checkboxWrapper}>
-            <Checkbox
-              value={isAreaSelected(area)}
-              onValueChange={() => 
-                primaryArea 
-                  ? togglePrimaryArea(area)
-                  : toggleSecondaryArea(area)
-              }
-              color={isAreaSelected(area) ? '#007AFF' : undefined}
-              style={styles.checkbox}
-              disabled={!!primaryArea && !isAreaSelected(area)}
-            />
-            <Text style={styles.checkboxLabel}>{area}</Text>
-          </View>
-        ))}
+      <View style={styles.contentContainer}>
+        <Image 
+          source={require('../assets/body.png')} 
+          style={styles.bodyImage}
+          resizeMode="contain"
+        />
+        <View style={styles.checkboxContainer}>
+          {bodyAreas.map((area, index) => (
+            <View key={index} style={[
+              styles.checkboxWrapper,
+              isAreaSelected(area) && { backgroundColor: '#87D0B2' }
+            ]}>
+              <TouchableOpacity 
+                style={styles.touchableArea}
+                onPress={() => 
+                  primaryArea 
+                    ? togglePrimaryArea(area)
+                    : toggleSecondaryArea(area)
+                }
+                disabled={isAreaDisabled(area)}
+              >
+                <Text style={styles.checkboxLabel}>{area}</Text>
+                <Checkbox
+                  value={isAreaSelected(area)}
+                  onValueChange={() => {}}
+                  color={isAreaSelected(area) ? '#007AFF' : '#519076'}
+                  style={styles.checkbox}
+                  disabled={isAreaDisabled(area)}
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
       </View>
 
       <TouchableOpacity
@@ -95,7 +127,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#ECE9E4',
   },
   progressContainer: {
     flexDirection: 'row',
@@ -109,10 +141,10 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   activeProgressBar: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#519076',
   },
   completedProgressBar: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#ACACAC',
   },
   title: {
     fontSize: 22,
@@ -126,40 +158,68 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
   },
-  checkboxContainer: {
+  contentContainer: {
+    flexDirection: 'row',
+    flex: 1,
     marginBottom: 30,
+    alignItems: 'center',
+    justifyContent: 'space-between', 
+  },
+  bodyImage: {
+    width: '40%',
+    height: '100%',
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  checkboxContainer: {
+    flex: 1,
+    marginLeft: 20,
   },
   checkboxWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    borderWidth: 1,
+    backgroundColor: '#F7F7F7',
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    padding: 12,
+    justifyContent: 'space-between',
   },
   checkbox: {
-    marginRight: 8,
+    marginLeft: 8,
     width: 24,
     height: 24,
+    
   },
   checkboxLabel: {
     fontSize: 16,
-    marginLeft: 8,
+    
   },
   disabledText: {
     color: '#AAA',
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4D4D4D',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 'auto',
+    marginTop: 20,
   },
   disabledButton: {
-    backgroundColor: '#B3E0FF',
+    backgroundColor: '#4D4D4D',
+    opacity: 0.5,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  touchableArea: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
   },
 });
 

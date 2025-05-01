@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './navigationTypes';
-import { Checkbox } from 'expo-checkbox';
 import { useNavigation } from '@react-navigation/native';
 
 type EnduranceScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Endurance'>;
@@ -12,11 +11,11 @@ const EnduranceScreen = () => {
   const navigation = useNavigation<EnduranceScreenNavigationProp>();
 
   const options = [
-    { id: 1, text: "Регулярно бегаю/плаваю/езжу на велосипеде" },
-    { id: 2, text: "Занимаюсь кардио 2-3 раза в неделю" },
-    { id: 3, text: "Иногда делаю кардио, но не регулярно" },
-    { id: 4, text: "Практически не занимаюсь кардио" },
-    { id: 5, text: "Не интересуюсь кардионагрузками" }
+    { id: 1, text: "Менее 30 секунд" },
+    { id: 2, text: "30-60 секунд" },
+    { id: 3, text: "1-2 минуты" },
+    { id: 4, text: "Более 2 минут" },
+    { id: 5, text: "Не знаю" }
   ];
 
   const handleContinue = () => {
@@ -26,17 +25,16 @@ const EnduranceScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Выносливость</Text>
-      
+    <View style={styles.container}>      
       {/* Прогресс-бар (2/3) */}
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.completedProgressBar]} />
+        <View style={[styles.progressBar, styles.activeProgressBar]} />
         <View style={[styles.progressBar, styles.completedProgressBar]} />
-        <View style={[styles.progressBar, styles.inactiveProgressBar]} />
       </View>
       
-      <Text style={styles.questionText}>Как часто вы занимаетесь кардио?</Text>
+      <Text style={styles.questionText}>Как долго вы можете 
+      держать планку?</Text>
       
       <View style={styles.optionsContainer}>
         {options.map((option) => (
@@ -49,11 +47,6 @@ const EnduranceScreen = () => {
             onPress={() => setSelectedOption(option.id)}
             activeOpacity={0.7}
           >
-            <Checkbox
-              value={selectedOption === option.id}
-              onValueChange={() => setSelectedOption(option.id)}
-              color={selectedOption === option.id ? '#4CAF50' : undefined}
-            />
             <Text style={styles.optionText}>{option.text}</Text>
           </TouchableOpacity>
         ))}
@@ -77,37 +70,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#ECE9E4',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     textAlign: 'center',
+    color: '#333',
   },
   progressContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 30,
+    marginBottom: 60,
   },
   progressBar: {
-    height: 4,
     flex: 1,
+    height: 4,
+    backgroundColor: '#E0E0E0',
     marginHorizontal: 2,
+    borderRadius: 2,
   },
-  completedProgressBar: {
+  activeProgressBar: {
     backgroundColor: '#4CAF50',
   },
-  inactiveProgressBar: {
-    backgroundColor: '#E0E0E0',
+  completedProgressBar: {
+    backgroundColor: '#ACACAC', 
   },
   questionText: {
-    fontSize: 18,
-    marginBottom: 20,
+    fontSize: 24,
+  
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   optionsContainer: {
-    marginBottom: 30,
+    flex: 1,
+    justifyContent: 'center',
+    marginBottom: 20,
   },
   optionButton: {
     flexDirection: 'row',
@@ -118,7 +116,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   selectedOptionButton: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: '#87D0B2',
   },
   optionText: {
     flex: 1,
@@ -126,13 +124,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   continueButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4D4D4D',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
+    marginBottom: 20,
   },
   disabledContinueButton: {
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#4D4D4D',
   },
   continueButtonText: {
     color: '#fff',

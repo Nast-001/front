@@ -1,7 +1,7 @@
 import { Checkbox } from 'expo-checkbox';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
 type GoalsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GoalsScreen'>;
@@ -14,11 +14,11 @@ const GoalsScreen = ({ navigation }: Props) => {
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
 
   const goals = [
-    "Похудение",
-    "Набор мышечной массы",
-    "Поддержание формы",
-    "Улучшение выносливости",
-    "Реабилитация после травм"
+    { text: "Изучение основы йоги", icon: require('../assets/goal1.svg') },
+    { text: "Снижение стресса", icon: require('../assets/goal2.svg') },
+    { text: "Увеличение силы", icon: require('../assets/goal3.svg') },
+    { text: "Снижение веса", icon: require('../assets/goal4.svg') },
+    { text: "Улучшение гибкости", icon: require('../assets/goal5.svg') }
   ];
 
   const toggleGoal = (goal: string) => {
@@ -37,24 +37,34 @@ const GoalsScreen = ({ navigation }: Props) => {
     <View style={styles.container}>
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.activeProgressBar]} />
-        <View style={styles.progressBar} />
-        <View style={styles.progressBar} />
+        <View style={[styles.progressBar,styles.completedProgressBar]} />
+        <View style={[styles.progressBar,styles.completedProgressBar]} />
       </View>
 
-      <Text style={styles.title}>Какие у вас цели?</Text>
+      <Text style={styles.title}> Какие цели вы хотите достичь? </Text>
       <Text style={styles.subtitle}>Выберите одну или несколько целей</Text>
 
       <View style={styles.checkboxContainer}>
         {goals.map((goal, index) => (
-          <View key={index} style={styles.checkboxWrapper}>
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.checkboxWrapper,
+              selectedGoals.includes(goal.text) && styles.selectedWrapper
+            ]}
+            onPress={() => toggleGoal(goal.text)}
+          >
+            <View style={styles.iconContainer}>
+              <Image source={goal.icon} style={styles.icon} />
+            </View>
+            <Text style={styles.checkboxLabel}>{goal.text}</Text>
             <Checkbox
-              value={selectedGoals.includes(goal)}
-              onValueChange={() => toggleGoal(goal)}
-              color={selectedGoals.includes(goal) ? '#007AFF' : undefined}
+              value={selectedGoals.includes(goal.text)}
+              onValueChange={() => toggleGoal(goal.text)}
+              color={selectedGoals.includes(goal.text) ? '#519076' : '#519076'}
               style={styles.checkbox}
             />
-            <Text style={styles.checkboxLabel}>{goal}</Text>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
 
@@ -76,7 +86,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#ECE9E4',
   },
   progressContainer: {
     flexDirection: 'row',
@@ -90,12 +100,16 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   activeProgressBar: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#519076',
+  },
+  completedProgressBar: {
+    backgroundColor: '#ACACAC',
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 10,
+    marginTop: 20,
     textAlign: 'center',
   },
   subtitle: {
@@ -105,31 +119,52 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   checkboxContainer: {
+    flex: 1,
+    justifyContent: 'center',
     marginBottom: 30,
   },
   checkboxWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    backgroundColor: '#F7F7F7',
+    borderRadius: 8,
+    padding: 16,
+    position: 'relative',
+  },
+  selectedWrapper: {
+    backgroundColor: '#87D0B2',
+  },
+  iconContainer: {
+    marginRight: 12,
+  },
+  icon: {
+    width: 24,
+    height: 24,
   },
   checkbox: {
-    marginRight: 8,
+    position: 'absolute',
+    right: 12,
     width: 24,
     height: 24,
   },
   checkboxLabel: {
     fontSize: 16,
-    marginLeft: 8,
+    flex: 1,
+    paddingRight: 40,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4D4D4D',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 'auto',
   },
   disabledButton: {
-    backgroundColor: '#B3E0FF',
+    backgroundColor: '#4D4D4D',
+    opacity: 0.5,
   },
   buttonText: {
     color: '#fff',

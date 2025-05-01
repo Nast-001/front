@@ -1,7 +1,6 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Image, StyleSheet, Animated, Easing, ActivityIndicator } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Animated, Easing, StyleSheet, Text, View } from 'react-native';
-import { sendRegistrationData } from './api/auth';
 import { RootStackParamList } from './navigationTypes';
 
 type GoalFormationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GoalFormation'>;
@@ -13,7 +12,6 @@ type Props = {
 const GoalFormationScreen = ({ navigation }: Props) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSendingData, setIsSendingData] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   // Эффект "дыхания"
@@ -39,31 +37,11 @@ const GoalFormationScreen = ({ navigation }: Props) => {
     }
   }, [imageLoaded, scaleAnim]);
 
-  // Отправка данных на бэкенд и переход на страницу уведомлений
+  // Автоматический переход на страницу уведомлений через 2.5 секунды
   useEffect(() => {
-    const sendDataAndNavigate = async () => {
-      try {
-        setIsSendingData(true);
-        // Отправляем данные на бэкенд
-        await sendRegistrationData();
-        
-        // Переходим на страницу уведомлений
-        navigation.navigate('Notification', {});
-      } catch (error: any) {
-        console.error('Ошибка при отправке данных:', error);
-        Alert.alert(
-          'Ошибка',
-          'Не удалось отправить данные на сервер. Пожалуйста, попробуйте еще раз.'
-        );
-      } finally {
-        setIsSendingData(false);
-        setIsLoading(false);
-      }
-    };
-
-    // Задержка для отображения анимации
     const timer = setTimeout(() => {
-      sendDataAndNavigate();
+      setIsLoading(false);
+      navigation.navigate('Notification');
     }, 2500);
 
     return () => clearTimeout(timer);
@@ -87,16 +65,16 @@ const GoalFormationScreen = ({ navigation }: Props) => {
         />
         {!imageLoaded && (
           <View style={[StyleSheet.absoluteFill, styles.loadingPlaceholder]}>
-            <ActivityIndicator size={24} color="#4CAF50" />
+            <ActivityIndicator size="large" color="#4CAF50" />
           </View>
         )}
       </View>
       
       <Text style={styles.text_subtitle}>Стать лучшей версией себя</Text>
       
-      {(isLoading || isSendingData) && (
+      {isLoading && (
         <View style={styles.loadingIndicator}>
-          <ActivityIndicator size={12} color="#4CAF50" />
+          <ActivityIndicator size="small" color="#4CAF50" />
         </View>
       )}
     </View>
@@ -109,17 +87,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    fontFamily: 'Lora',
-
     backgroundColor: '#ECE9E4',
   },
   text: {
     fontSize: 30,
+    fontWeight: 'bold',
     marginVertical: 20,
     textAlign: 'center',
     color: '#333',
-    fontFamily: 'Lora-Bold',
-
   },
   imageContainer: {
     width: 300,
@@ -138,8 +113,6 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     textAlign: 'center',
     color: '#333',
-    fontFamily: 'Lora',
-
   },
   loadingPlaceholder: {
     justifyContent: 'center',

@@ -1,14 +1,7 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import * as Notifications from 'expo-notifications';
 import React, { useEffect } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-type RootStackParamList = {
-  Hello: undefined;
-  // добавьте другие экраны по необходимости
-};
-
-type NavigationType = NavigationProp<RootStackParamList>;
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import * as Notifications from 'expo-notifications';
 
 // Configure notification handler
 Notifications.setNotificationHandler({
@@ -20,7 +13,7 @@ Notifications.setNotificationHandler({
 });
 
 const NotificationPage = () => {
-  const navigation = useNavigation<NavigationType>();
+  const navigation = useNavigation();
 
   useEffect(() => {
     // Request permissions when component mounts
@@ -57,12 +50,8 @@ const NotificationPage = () => {
       } else {
         console.log('Permission not granted');
       }
-      // Перенаправляем на страницу Hello
-      navigation.navigate('Hello');
     } catch (error) {
       console.log('Error:', error);
-      // Перенаправляем даже в случае ошибки
-      navigation.navigate('Hello');
     }
   };
 
@@ -100,7 +89,7 @@ const NotificationPage = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
           style={styles.skipButton}
-          onPress={() => navigation.navigate('Hello')}
+          onPress={() => navigation.goBack()}
         >
           <Text style={styles.skipButtonText}>Не сейчас</Text>
         </TouchableOpacity>
@@ -122,8 +111,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ECE9E4',
     padding: 20,
     justifyContent: 'space-between',
-    fontFamily: 'Lora',
-
   },
   contentContainer: {
     alignItems: 'center',
@@ -140,8 +127,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 30,
     textAlign: 'center',
-    fontFamily: 'Lora',
-
   },
   card: {
     backgroundColor: '#f5f5f5',
@@ -174,23 +159,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 6,
-    fontFamily: 'Lora',
-
   },
   cardText: {
     fontSize: 13,
     color: '#666',
     lineHeight: 18,
-    fontFamily: 'Lora',
-
   },
   description: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 40,
     lineHeight: 24,
-    fontFamily: 'Lora',
-
     color: '#666',
   },
   buttonContainer: {
@@ -205,8 +184,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textDecorationLine: 'underline',
-    fontFamily: 'Lora',
-
   },
   enableButton: {
     backgroundColor: '#000',
@@ -220,8 +197,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
-    fontFamily: 'Lora',
-
   },
 });
 

@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, Animated, Easing, ActivityIndicator } fr
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './navigationTypes';
 
-type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Loading'>;
+type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GoalFormation'>;
 
 type Props = {
   navigation: LoadingScreenNavigationProp;
@@ -70,7 +70,7 @@ const LoadingScreen = ({ navigation }: Props) => {
         )}
       </View>
       
-      <Text style={styles.text}>Большие результаты начинаются 
+      <Text style={styles.text_subtitle}>Большие результаты начинаются 
       с маленьких целей</Text>
       
       {isLoading && (
@@ -88,25 +88,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#ECE9E4',
   },
   text: {
-    fontSize: 18,
+    fontSize: 30,
+    fontWeight: 'bold',
     marginVertical: 20,
     textAlign: 'center',
     color: '#333',
   },
   imageContainer: {
-    width: 200,
-    height: 200,
+    width: 300,
+    height: 400,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 20,
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: '180%',
+    height: '180%',
     resizeMode: 'contain',
+  },
+  text_subtitle: {
+    fontSize: 18,
+    marginVertical: 20,
+    textAlign: 'center',
+    color: '#333',
   },
   loadingPlaceholder: {
     justifyContent: 'center',
