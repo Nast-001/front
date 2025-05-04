@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Checkbox } from 'expo-checkbox';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Checkbox } from 'expo-checkbox';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
 type MotivationRouteProp = RouteProp<RootStackParamList, 'Motivation'>;
@@ -15,6 +15,11 @@ type Props = {
 
 const MotivationScreen = ({ navigation, route }: Props) => {
   const [selectedMotivations, setSelectedMotivations] = useState<string[]>([]);
+
+  const formData = route.params?.formData || {};
+  const gender = route.params?.gender;
+  const selectedGoals = route.params?.selectedGoals || [];
+  const body_parts = route.params?.body_parts || [];
 
   const motivations = [
     "Оставаться здоровым",
@@ -36,8 +41,11 @@ const MotivationScreen = ({ navigation, route }: Props) => {
   const handleContinue = () => {
     if (selectedMotivations.length > 0) {
       navigation.navigate('Loading', {
-        selectedGoals: route.params?.selectedGoals || [],
-        selectedMotivations: selectedMotivations
+        ...formData,
+        gender,
+        selectedGoals,
+        body_parts,
+        selectedMotivations
       });
     }
   };

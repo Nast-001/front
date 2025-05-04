@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from './navigationTypes';
-import { useNavigation } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import React, { useEffect, useState } from 'react';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { RootStackParamList } from './navigationTypes';
 
 type InfoScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Info'>;
+type InfoScreenRouteProp = RouteProp<RootStackParamList, 'Info'>;
 
 const InfoScreen = () => {
   const [name, setName] = useState('');
@@ -15,7 +16,12 @@ const InfoScreen = () => {
   const [bmi, setBmi] = useState<number | null>(null);
   const [displayHeight, setDisplayHeight] = useState('170');
   const [displayWeight, setDisplayWeight] = useState('70');
+  
   const navigation = useNavigation<InfoScreenNavigationProp>();
+  const route = useRoute<InfoScreenRouteProp>();
+  
+  const formData = route.params?.formData || {};
+  const gender = route.params?.gender;
 
   useEffect(() => {
     if (height && weight) {
@@ -47,7 +53,14 @@ const InfoScreen = () => {
 
   const handleContinue = () => {
     if (name && age && height && weight) {
-      navigation.navigate('Time');
+      navigation.navigate('Time', {
+        ...formData,
+        gender,
+        name,
+        age,
+        height,
+        weight
+      });
     }
   };
 

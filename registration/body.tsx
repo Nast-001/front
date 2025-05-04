@@ -1,19 +1,25 @@
-import { Checkbox } from 'expo-checkbox';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Checkbox } from 'expo-checkbox';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
 type BodyAreasNavigationProp = StackNavigationProp<RootStackParamList, 'BodyAreas'>;
+type BodyAreasRouteProp = RouteProp<RootStackParamList, 'BodyAreas'>;
 
 type Props = {
   navigation: BodyAreasNavigationProp;
+  route: BodyAreasRouteProp;
 };
 
-const BodyAreasScreen = ({ navigation }: Props) => {
+const BodyAreasScreen = ({ navigation, route }: Props) => {
   const [primaryArea, setPrimaryArea] = useState<string | null>(null);
   const [secondaryAreas, setSecondaryAreas] = useState<string[]>([]);
+  
+  const formData = route.params?.formData || {};
+  const gender = route.params?.gender;
+  const selectedGoals = route.params?.selectedGoals || [];
 
   const bodyAreas = [
     "Всё тело", "Шея и плечи", "Руки и грудь", "Спина", "Пресс и кор", "Ягодицы и Бедра", "Ноги и голени"
@@ -52,7 +58,10 @@ const BodyAreasScreen = ({ navigation }: Props) => {
 
   const handleContinue = () => {
     navigation.navigate('Motivation', { 
-      selectedGoals: primaryArea ? [primaryArea] : secondaryAreas 
+      ...formData,
+      gender,
+      selectedGoals,
+      body_parts: primaryArea ? [primaryArea] : secondaryAreas 
     });
   };
 

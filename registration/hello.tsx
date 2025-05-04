@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
 type HelloScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Hello'>;
@@ -25,7 +25,7 @@ const HelloScreen = () => {
         // Переходим сразу на HomeScreen без валидации
         navigation.reset({
           index: 0,
-          routes: [{ name: 'MainTab' }],
+          routes: [{ name: 'MainTabs' }],
         });
       } else {
         // Проверяем пароли при регистрации
@@ -56,12 +56,6 @@ const HelloScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Image 
-        source={require('../assets/load.png')} 
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      
       <Text style={styles.title}>
         {isLogin ? 'Вход' : 'Регистрация'}
       </Text>
@@ -94,11 +88,11 @@ const HelloScreen = () => {
       )}
 
       <TouchableOpacity 
-        style={[styles.button, loading && styles.buttonDisabled, isLogin ? styles.greenButton : styles.whiteButton]} 
+        style={[styles.button, loading && styles.buttonDisabled]} 
         onPress={handleSubmit}
         disabled={loading}
       >
-        <Text style={[styles.buttonText, !isLogin && styles.greenText]}>
+        <Text style={styles.buttonText}>
           {loading 
             ? 'Загрузка...' 
             : isLogin 
@@ -109,11 +103,13 @@ const HelloScreen = () => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.switchButton, isLogin ? styles.whiteButton : styles.greenButton]}
+        style={styles.switchButton}
         onPress={() => setIsLogin(!isLogin)}
       >
-        <Text style={[styles.buttonText, isLogin && styles.greenText]}>
-          {isLogin ? 'Зарегистрироваться' : 'Войти'}
+        <Text style={styles.switchButtonText}>
+          {isLogin
+            ? 'Нет аккаунта? Зарегистрироваться'
+            : 'Уже есть аккаунт? Войти'}
         </Text>
       </TouchableOpacity>
     </View>
@@ -124,27 +120,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'flex-start',
-    backgroundColor: '#ECE9E4',
-    fontFamily: 'Lora',
-
-  },
-  logo: {
-    width: '100%',
-    height: 250,
-    marginBottom: 0,
-  },
-  loadImage: {
-    width: '100%',
-    height: 250,
-    marginBottom: 40,
+    justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 40,
-    fontFamily: 'Lora',
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 30,
     textAlign: 'center',
-    
   },
   input: {
     borderWidth: 1,
@@ -152,45 +135,28 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     marginBottom: 15,
-    backgroundColor: '#FFFFFF',
-    fontFamily: 'Lora',
   },
   button: {
-    padding: 10,
+    backgroundColor: '#007AFF',
+    padding: 15,
     borderRadius: 8,
     marginTop: 10,
-    width: '100%',
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   buttonDisabled: {
     backgroundColor: '#ccc',
   },
   buttonText: {
+    color: '#fff',
     textAlign: 'center',
     fontSize: 16,
-    fontFamily: 'Lora',
-    color: '#FFFFFF',
-  },
-  greenText: {
-    color: '#87D0B2',
-  },
-  greenButton: {
-    backgroundColor: '#87D0B2',
-  },
-  whiteButton: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#87D0B2',
+    fontWeight: 'bold',
   },
   switchButton: {
-    borderRadius: 8,
     marginTop: 20,
-    width: '100%',
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  switchButtonText: {
+    color: '#007AFF',
+    textAlign: 'center',
   },
 });
 

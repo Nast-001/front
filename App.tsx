@@ -1,22 +1,25 @@
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import RegistPage from './registration/reg';
-import GoalsScreen from './registration/goal';
+import MainTabNavigator from './main/navigation/MainTabNavigator';
 import BodyAreasScreen from './registration/body';
-import MotivationScreen from './registration/motivation';
-import LoadingScreen from './registration/loading';
-import SkillScreen from './registration/skill';
-import FlexibilityScreen from './registration/flexibility';
-import EnduranceScreen from './registration/endurance';
 import BreathScreen from './registration/breath';
-import RestrictionsScreen from './registration/restrictions';
+import EnduranceScreen from './registration/endurance';
+import FlexibilityScreen from './registration/flexibility';
+import GoalsScreen from './registration/goal';
+import HelloScreen from './registration/hello';
 import InfoScreen from './registration/info';
+import LoadingScreen from './registration/loading';
+import MotivationScreen from './registration/motivation';
 import { RootStackParamList } from './registration/navigationTypes';
-import TimeScreen from './registration/time';
-import GoalFormationScreen from './registration/program';
 import NotificationPage from './registration/noitfication';
+import GoalFormationScreen from './registration/program';
+import RegistPage from './registration/reg';
+import RestrictionsScreen from './registration/restrictions';
+import SkillScreen from './registration/skill';
+import TimeScreen from './registration/time';
+
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
@@ -24,13 +27,15 @@ const AppNavigator = () => {
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Regist"
+          initialRouteName="Hello"
           screenOptions={{ 
             headerShown: false,
             gestureEnabled: false // Отключаем свайп-назад
           }}
         >
-          <Stack.Screen name="Regist" component={RegistPage} />
+          <Stack.Screen name="Hello" component={HelloScreen} />
+          <Stack.Screen name="MainTabs" component={MainTabNavigator} />
+          <Stack.Screen name="Reg" component={RegistPage} />
           <Stack.Screen name="GoalsScreen" component={GoalsScreen} />
           <Stack.Screen name="BodyAreas" component={BodyAreasScreen} />
           <Stack.Screen name="Motivation" component={MotivationScreen} />

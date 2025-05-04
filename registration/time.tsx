@@ -1,24 +1,96 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { register, saveUserData } from './api/auth';
 import { RootStackParamList } from './navigationTypes';
-import { useNavigation } from '@react-navigation/native';
 
 type TimeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Time'>;
+type TimeScreenRouteProp = RouteProp<RootStackParamList, 'Time'>;
 
 const TimeScreen = () => {
-  const [selectedTime, setSelectedTime] = useState<string>('');
+  const [selectedTime, setSelectedTime] = useState<'short' | 'medium' | 'long' | ''>('');
+  const [loading, setLoading] = useState(false);
+  
   const navigation = useNavigation<TimeScreenNavigationProp>();
+  const route = useRoute<TimeScreenRouteProp>();
+  
+  const formData = route.params?.formData || { email: '', password: '', password2: '' };
+  const gender = route.params?.gender;
+  const name = route.params?.name;
+  const age = route.params?.age;
+  const height = route.params?.height;
+  const weight = route.params?.weight;
 
   const timeOptions = [
-    { label: '10 мин', value: '10' },
-    { label: '20-30 мин', value: '20-30' },
-    { label: '30+ мин', value: '30+' },
+    { label: '10 мин', value: 'short' as const },
+    { label: '20-30 мин', value: 'medium' as const },
+    { label: '30+ мин', value: 'long' as const },
   ];
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selectedTime) {
-      navigation.navigate('GoalFormation');
+      try {
+        setLoading(true);
+        
+        // Подготавливаем данные для отправки на сервер
+        if (!name) {
+          Alert.alert('Ошибка', 'Имя пользователя обязательно');
+          return;
+        }
+
+        const userData = {
+          email: formData.email,
+          password: formData.password,
+          password2: formData.password2,
+          name: name,
+          gender: gender,
+          age: age ? parseInt(age) : undefined,
+          height: height ? parseInt(height) : undefined,
+          weight: weight ? parseInt(weight) : undefined,
+          workout_duration: selectedTime,
+          // Другие поля будут добавлены позже
+        };
+        
+        // Сохраняем данные пользователя локально
+        await saveUserData(userData);
+        
+        // Отправляем данные на сервер
+        const response = await register(userData);
+        
+        // Если регистрация успешна, переходим на следующий экран
+        navigation.navigate('GoalFormation', {
+          ...formData,
+          gender,
+          name,
+          age,
+          height,
+          weight,
+          workout_duration: selectedTime
+        });
+      } catch (error: any) {
+        console.error('Ошибка регистрации:', error);
+        console.error('Данные запроса:', userData);
+        
+        let errorMessage = 'Произошла ошибка при регистрации. Пожалуйста, попробуйте еще раз.';
+        
+        if (error.response) {
+          // Сервер ответил с ошибкой
+          console.error('Ответ сервера:', error.response.data);
+          errorMessage = error.response.data.message || errorMessage;
+        } else if (error.request) {
+          // Запрос был сделан, но ответа не получено
+          console.error('Нет ответа от сервера:', error.request);
+          errorMessage = 'Не удалось подключиться к серверу. Проверьте подключение к интернету.';
+        } else {
+          // Что-то пошло не так при настройке запроса
+          console.error('Ошибка запроса:', error.message);
+        }
+        
+        Alert.alert('Ошибка регистрации', errorMessage);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -59,12 +131,16 @@ const TimeScreen = () => {
         <TouchableOpacity
           style={[
             styles.continueButton,
-            !selectedTime && styles.disabledContinueButton,
+            (!selectedTime || loading) && styles.disabledContinueButton,
           ]}
           onPress={handleContinue}
-          disabled={!selectedTime}
+          disabled={!selectedTime || loading}
         >
-          <Text style={styles.continueButtonText}>Продолжить</Text>
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.continueButtonText}>Продолжить</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>

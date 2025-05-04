@@ -1,14 +1,37 @@
+import { NavigationProp, RouteProp } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationProp } from '@react-navigation/native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
 type Props = {
   navigation: NavigationProp<RootStackParamList, 'Regist'>;
+  route: RouteProp<RootStackParamList, 'Regist'>;
 };
 
-const RegistPage = ({ navigation }: Props) => {
+const RegistPage = ({ navigation, route }: Props) => {
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  const formData = route.params?.formData || {};
+
+  const handleGenderSelect = (gender: string) => {
+    setSelectedGender(gender);
+    
+    // Преобразуем пол в формат, который ожидает API
+    let apiGender: 'M' | 'F' | 'N' | 'prefer_not_to_say' = 'prefer_not_to_say';
+    
+    if (gender === 'male') {
+      apiGender = 'M';
+    } else if (gender === 'female') {
+      apiGender = 'F';
+    } else if (gender === 'nonbinary') {
+      apiGender = 'N';
+    }
+    
+    // Переходим на следующий экран с сохраненными данными
+    navigation.navigate('GoalsScreen', {
+      ...formData,
+      gender: apiGender
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -24,30 +47,21 @@ const RegistPage = ({ navigation }: Props) => {
         <View style={styles.buttonsContainer}>
           <TouchableOpacity 
             style={[styles.button, selectedGender === 'female' && styles.selectedButton]} 
-            onPress={() => {
-              setSelectedGender('female');
-              navigation.navigate('GoalsScreen');
-            }}
+            onPress={() => handleGenderSelect('female')}
           >
             <Text style={styles.buttonText}>Женский</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={[styles.button, selectedGender === 'male' && styles.selectedButton]} 
-            onPress={() => {
-              setSelectedGender('male');
-              navigation.navigate('GoalsScreen');
-            }}
+            onPress={() => handleGenderSelect('male')}
           >
             <Text style={styles.buttonText}>Мужской</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={[styles.button, selectedGender === 'nonbinary' && styles.selectedButton]} 
-            onPress={() => {
-              setSelectedGender('nonbinary');
-              navigation.navigate('GoalsScreen');
-            }}
+            onPress={() => handleGenderSelect('nonbinary')}
           >
             <Text style={styles.buttonText}>Небинарный</Text>
           </TouchableOpacity>
@@ -56,10 +70,7 @@ const RegistPage = ({ navigation }: Props) => {
 
       <TouchableOpacity 
         style={styles.skipButton}
-        onPress={() => {
-          setSelectedGender('prefer_not_to_say');
-          navigation.navigate('GoalsScreen');
-        }}
+        onPress={() => handleGenderSelect('prefer_not_to_say')}
       >
         <Text style={styles.skipButtonText}>предпочитаю не говорить</Text>
       </TouchableOpacity>

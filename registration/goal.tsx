@@ -1,17 +1,22 @@
-import { Checkbox } from 'expo-checkbox';
+import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Checkbox } from 'expo-checkbox';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
 type GoalsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GoalsScreen'>;
+type GoalsScreenRouteProp = RouteProp<RootStackParamList, 'GoalsScreen'>;
 
 type Props = {
   navigation: GoalsScreenNavigationProp;
+  route: GoalsScreenRouteProp;
 };
 
-const GoalsScreen = ({ navigation }: Props) => {
+const GoalsScreen = ({ navigation, route }: Props) => {
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const formData = route.params?.formData || {};
+  const gender = route.params?.gender;
 
   const goals = [
     { text: "Изучение основы йоги", icon: require('../assets/goal1.svg') },
@@ -30,7 +35,11 @@ const GoalsScreen = ({ navigation }: Props) => {
   };
 
   const handleContinue = () => {
-    navigation.navigate('BodyAreas', { selectedGoals });
+    navigation.navigate('BodyAreas', { 
+      ...formData,
+      gender,
+      selectedGoals 
+    });
   };
 
   return (
