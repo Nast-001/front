@@ -25,7 +25,7 @@ const HelloScreen = () => {
         // Переходим сразу на HomeScreen без валидации
         navigation.reset({
           index: 0,
-          routes: [{ name: 'MainTabs' }],
+          routes: [{ name: 'MainTab' }],
         });
       } else {
         // Проверяем пароли при регистрации

@@ -97,7 +97,7 @@ const LessonScreen = () => {
       <View style={styles.videoContainer}>
         {isLoading && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#666" />
+            <ActivityIndicator size={24} color="#666" />
             <Text style={styles.loadingText}>Загрузка видео...</Text>
           </View>
         )}

@@ -26,6 +26,15 @@ export type MainTabParamList = {
 };
 
 export type RootStackParamList = {
-  MainTabs: NavigatorScreenParams<MainTabParamList>;
-  // Здесь можно добавить другие экраны, которые не входят в tab navigation
+  MainTab: NavigatorScreenParams<MainTabParamList>;
+  Profile: undefined;
+  EditProfile: undefined;
+  Settings: undefined;
+  Achievements: {
+    date: string;
+  };
+  CreateWorkout: undefined;
+  WorkoutDetails: {
+    workoutId: string;
+  };
 }; 

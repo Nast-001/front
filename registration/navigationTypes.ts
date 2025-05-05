@@ -3,7 +3,7 @@ import { MainTabParamList } from '../main/navigationTypes';
 
 export type RootStackParamList = {
   Hello: undefined;
-  MainTabs: NavigatorScreenParams<MainTabParamList>;
+  MainTab: NavigatorScreenParams<MainTabParamList>;
   Reg: {
     formData?: {
       email: string;
@@ -107,7 +107,6 @@ export type RootStackParamList = {
     height?: string;
     weight?: string;
     workout_duration?: 'short' | 'medium' | 'long';
-    experience?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | 'pro';
   };
   Flexibility: {
     formData?: {
@@ -121,8 +120,6 @@ export type RootStackParamList = {
     height?: string;
     weight?: string;
     workout_duration?: 'short' | 'medium' | 'long';
-    experience?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | 'pro';
-    flexibility?: 'very_poor' | 'poor' | 'average' | 'good' | 'excellent';
   };
   Endurance: {
     formData?: {
@@ -136,9 +133,6 @@ export type RootStackParamList = {
     height?: string;
     weight?: string;
     workout_duration?: 'short' | 'medium' | 'long';
-    experience?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | 'pro';
-    flexibility?: 'very_poor' | 'poor' | 'average' | 'good' | 'excellent';
-    plank_time?: 'less_30' | '30_60' | '1_2' | '2_5' | 'DK';
   };
   Breath: {
     formData?: {
@@ -152,10 +146,6 @@ export type RootStackParamList = {
     height?: string;
     weight?: string;
     workout_duration?: 'short' | 'medium' | 'long';
-    experience?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | 'pro';
-    flexibility?: 'very_poor' | 'poor' | 'average' | 'good' | 'excellent';
-    plank_time?: 'less_30' | '30_60' | '1_2' | '2_5' | 'DK';
-    breathing?: 'good' | 'middle' | 'bad';
   };
   Restrictions: {
     formData?: {
@@ -169,11 +159,6 @@ export type RootStackParamList = {
     height?: string;
     weight?: string;
     workout_duration?: 'short' | 'medium' | 'long';
-    experience?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | 'pro';
-    flexibility?: 'very_poor' | 'poor' | 'average' | 'good' | 'excellent';
-    plank_time?: 'less_30' | '30_60' | '1_2' | '2_5' | 'DK';
-    breathing?: 'good' | 'middle' | 'bad';
-    limitations?: string[];
   };
   Notification: {
     formData?: {
@@ -187,13 +172,15 @@ export type RootStackParamList = {
     height?: string;
     weight?: string;
     workout_duration?: 'short' | 'medium' | 'long';
-    experience?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | 'pro';
-    flexibility?: 'very_poor' | 'poor' | 'average' | 'good' | 'excellent';
-    plank_time?: 'less_30' | '30_60' | '1_2' | '2_5' | 'DK';
-    breathing?: 'good' | 'middle' | 'bad';
-    limitations?: string[];
-    goals?: string[];
-    body_parts?: string[];
-    motivations?: string[];
+  };
+  Profile: undefined;
+  EditProfile: undefined;
+  Settings: undefined;
+  Achievements: {
+    date: string;
+  };
+  CreateWorkout: undefined;
+  WorkoutDetails: {
+    workoutId: string;
   };
 };

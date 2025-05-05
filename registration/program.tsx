@@ -65,7 +65,7 @@ const GoalFormationScreen = ({ navigation }: Props) => {
         />
         {!imageLoaded && (
           <View style={[StyleSheet.absoluteFill, styles.loadingPlaceholder]}>
-            <ActivityIndicator size="large" color="#4CAF50" />
+            <ActivityIndicator size={24} color="#4CAF50" />
           </View>
         )}
       </View>
@@ -74,7 +74,7 @@ const GoalFormationScreen = ({ navigation }: Props) => {
       
       {isLoading && (
         <View style={styles.loadingIndicator}>
-          <ActivityIndicator size="small" color="#4CAF50" />
+          <ActivityIndicator size={12} color="#4CAF50" />
         </View>
       )}
     </View>

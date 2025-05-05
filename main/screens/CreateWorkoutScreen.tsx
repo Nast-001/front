@@ -1,172 +1,504 @@
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { Feather } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MainTabParamList } from '../navigationTypes';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 
-type CreateWorkoutScreenNavigationProp = StackNavigationProp<MainTabParamList, 'CreateWorkout'>;
+type WorkoutVideo = {
+  id: string;
+  title: string;
+  description: string;
+  duration: number;
+  calories: number;
+  thumbnailUrl: string;
+  videoUrl: string;
+};
+
+type WorkoutSettings = {
+  name: string;
+  restTime: number;
+  poseTime: number;
+  setRestTime: number;
+  sets: number;
+};
+
+const SAMPLE_VIDEOS: WorkoutVideo[] = [
+  {
+    id: '1',
+    title: 'Разминка всего тела',
+    description: 'Комплексная разминка для подготовки к тренировке',
+    duration: 300,
+    calories: 50,
+    thumbnailUrl: 'https://via.placeholder.com/150',
+    videoUrl: 'https://example.com/video1',
+  },
+  {
+    id: '2',
+    title: 'Силовая тренировка',
+    description: 'Упражнения для развития силы мышц',
+    duration: 600,
+    calories: 150,
+    thumbnailUrl: 'https://via.placeholder.com/150',
+    videoUrl: 'https://example.com/video2',
+  },
+  {
+    id: '3',
+    title: 'Кардио интервалы',
+    description: 'Интенсивная кардио тренировка',
+    duration: 450,
+    calories: 200,
+    thumbnailUrl: 'https://via.placeholder.com/150',
+    videoUrl: 'https://example.com/video3',
+  },
+  {
+    id: '4',
+    title: 'Растяжка',
+    description: 'Комплекс упражнений для растяжки',
+    duration: 400,
+    calories: 80,
+    thumbnailUrl: 'https://via.placeholder.com/150',
+    videoUrl: 'https://example.com/video4',
+  },
+  {
+    id: '5',
+    title: 'Йога для начинающих',
+    description: 'Базовые асаны и дыхательные упражнения',
+    duration: 500,
+    calories: 100,
+    thumbnailUrl: 'https://via.placeholder.com/150',
+    videoUrl: 'https://example.com/video5',
+  },
+];
 
 const CreateWorkoutScreen = () => {
-  const navigation = useNavigation<CreateWorkoutScreenNavigationProp>();
-  const [selectedType, setSelectedType] = useState<string>('');
-  const [selectedDuration, setSelectedDuration] = useState<string>('');
-  const [selectedLevel, setSelectedLevel] = useState<string>('');
+  const [step, setStep] = useState(0);
+  const [selectedVideos, setSelectedVideos] = useState<WorkoutVideo[]>([]);
+  const [settings, setSettings] = useState<WorkoutSettings>({
+    name: '',
+    restTime: 30,
+    poseTime: 40,
+    setRestTime: 60,
+    sets: 1,
+  });
+  const [savedWorkouts, setSavedWorkouts] = useState<Array<{ name: string; videos: WorkoutVideo[]; settings: WorkoutSettings }>>([]);
 
-  const workoutTypes = [
-    { id: '1', title: 'Кардио', icon: '🏃‍♂️' },
-    { id: '2', title: 'Силовая', icon: '💪' },
-    { id: '3', title: 'Йога', icon: '🧘‍♂️' },
-    { id: '4', title: 'Растяжка', icon: '🤸‍♂️' },
-  ];
-
-  const durations = [
-    { id: '1', title: '15 минут' },
-    { id: '2', title: '30 минут' },
-    { id: '3', title: '45 минут' },
-    { id: '4', title: '60 минут' },
-  ];
-
-  const levels = [
-    { id: '1', title: 'Начальный' },
-    { id: '2', title: 'Средний' },
-    { id: '3', title: 'Продвинутый' },
-  ];
-
-  const handleCreate = () => {
-    // Здесь будет логика создания тренировки
-    console.log('Создание тренировки:', {
-      type: selectedType,
-      duration: selectedDuration,
-      level: selectedLevel,
-    });
+  const handleVideoSelect = (video: WorkoutVideo) => {
+    if (selectedVideos.find(v => v.id === video.id)) {
+      setSelectedVideos(selectedVideos.filter(v => v.id !== video.id));
+    } else {
+      setSelectedVideos([...selectedVideos, video]);
+    }
   };
 
-  return (
+  const calculateTotalTime = () => {
+    const videosTime = selectedVideos.reduce((acc, video) => acc + video.duration, 0);
+    const totalRestTime = (selectedVideos.length - 1) * settings.restTime;
+    const totalPoseTime = selectedVideos.length * settings.poseTime;
+    const totalSetRestTime = (settings.sets - 1) * settings.setRestTime;
+    return (videosTime + totalRestTime + totalPoseTime + totalSetRestTime) * settings.sets;
+  };
+
+  const calculateTotalCalories = () => {
+    return selectedVideos.reduce((acc, video) => acc + video.calories, 0) * settings.sets;
+  };
+
+  const renderStep0 = () => (
+    <View style={styles.centerContainer}>
+      {savedWorkouts.length === 0 ? (
+        <>
+          <TouchableOpacity style={styles.plusButton} onPress={() => setStep(1)}>
+            <Feather name="plus" size={48} color="#fff" />
+          </TouchableOpacity>
+          <Text style={styles.plusButtonText}>Создать новую тренировку</Text>
+        </>
+      ) : (
+        <View style={styles.workoutsContainer}>
+          <ScrollView style={styles.savedWorkoutsList}>
+            {savedWorkouts.map((workout, index) => (
+              <View key={index} style={styles.savedWorkout}>
+                <Text style={styles.savedWorkoutTitle}>{workout.name}</Text>
+                <Text style={styles.savedWorkoutDetails}>
+                  {workout.videos.length} упражнений • {Math.floor(calculateTotalTime() / 60)} мин
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+          <TouchableOpacity 
+            style={styles.smallPlusButton} 
+            onPress={() => setStep(1)}
+          >
+            <Feather name="plus" size={24} color="#fff" />
+            <Text style={styles.smallPlusButtonText}>Новая тренировка</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
+
+  const renderStep1 = () => (
+    <View style={styles.container}>
+      <Text style={styles.stepIndicator}>Шаг 1/3</Text>
+      <ScrollView>
+        {SAMPLE_VIDEOS.map((video) => (
+          <TouchableOpacity
+            key={video.id}
+            style={[
+              styles.videoCard,
+              selectedVideos.find(v => v.id === video.id) && styles.videoCardSelected
+            ]}
+            onPress={() => handleVideoSelect(video)}
+          >
+            <Image source={{ uri: video.thumbnailUrl }} style={styles.thumbnail} />
+            <View style={styles.videoInfo}>
+              <Text style={styles.videoTitle}>{video.title}</Text>
+              <Text style={styles.videoDescription}>{video.description}</Text>
+              <Text style={styles.videoDuration}>{Math.floor(video.duration / 60)} мин</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      <TouchableOpacity
+        style={[styles.continueButton, selectedVideos.length === 0 && styles.continueButtonDisabled]}
+        onPress={() => selectedVideos.length > 0 && setStep(2)}
+        disabled={selectedVideos.length === 0}
+      >
+        <Text style={styles.continueButtonText}>Продолжить</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderStep2 = () => (
+    <View style={styles.container}>
+      <Text style={styles.stepIndicator}>Шаг 2/3</Text>
+      <DraggableFlatList<WorkoutVideo>
+        data={selectedVideos}
+        onDragEnd={({ data }) => setSelectedVideos(data)}
+        keyExtractor={(item: WorkoutVideo) => item.id}
+        renderItem={({ item, drag, isActive }: RenderItemParams<WorkoutVideo>) => (
+          <ScaleDecorator>
+            <TouchableOpacity
+              style={[styles.videoCard, isActive && styles.videoCardDragging]}
+              onLongPress={drag}
+              delayLongPress={200}
+            >
+              <TouchableOpacity
+                style={styles.removeButton}
+                onPress={() => setSelectedVideos(selectedVideos.filter(v => v.id !== item.id))}
+              >
+                <Feather name="minus-circle" size={24} color="#ff4444" />
+              </TouchableOpacity>
+              <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbnail} />
+              <View style={styles.videoInfo}>
+                <Text style={styles.videoTitle}>{item.title}</Text>
+                <Text style={styles.videoDescription}>{item.description}</Text>
+              </View>
+              <View style={styles.dragHandle}>
+                <Feather name="menu" size={24} color="#666" />
+              </View>
+            </TouchableOpacity>
+          </ScaleDecorator>
+        )}
+      />
+      <TouchableOpacity
+        style={[styles.continueButton, selectedVideos.length === 0 && styles.continueButtonDisabled]}
+        onPress={() => selectedVideos.length > 0 && setStep(3)}
+        disabled={selectedVideos.length === 0}
+      >
+        <Text style={styles.continueButtonText}>Продолжить</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderStep3 = () => (
     <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Тип тренировки</Text>
-        <View style={styles.optionsContainer}>
-          {workoutTypes.map(type => (
-            <TouchableOpacity
-              key={type.id}
-              style={[
-                styles.optionButton,
-                selectedType === type.id && styles.selectedOption,
-              ]}
-              onPress={() => setSelectedType(type.id)}
-            >
-              <Text style={styles.optionIcon}>{type.icon}</Text>
-              <Text style={styles.optionText}>{type.title}</Text>
-            </TouchableOpacity>
-          ))}
+      <Text style={styles.stepIndicator}>Шаг 3/3</Text>
+      <View style={styles.settingsContainer}>
+        <View style={styles.settingItem}>
+          <Text style={styles.settingLabel}>Название тренировки</Text>
+          <TextInput
+            style={styles.input}
+            value={settings.name}
+            onChangeText={(text) => setSettings({ ...settings, name: text })}
+            placeholder="Введите название"
+          />
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Длительность</Text>
-        <View style={styles.optionsContainer}>
-          {durations.map(duration => (
-            <TouchableOpacity
-              key={duration.id}
-              style={[
-                styles.optionButton,
-                selectedDuration === duration.id && styles.selectedOption,
-              ]}
-              onPress={() => setSelectedDuration(duration.id)}
-            >
-              <Text style={styles.optionText}>{duration.title}</Text>
-            </TouchableOpacity>
-          ))}
+        <View style={styles.settingItem}>
+          <Text style={styles.settingLabel}>Время отдыха (сек)</Text>
+          <Picker
+            selectedValue={settings.restTime}
+            style={styles.picker}
+            onValueChange={(value) => setSettings({ ...settings, restTime: value })}
+          >
+            {Array.from({ length: 9 }, (_, i) => (i + 1) * 10).map((value) => (
+              <Picker.Item key={value} label={`${value} сек`} value={value} />
+            ))}
+          </Picker>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Уровень сложности</Text>
-        <View style={styles.optionsContainer}>
-          {levels.map(level => (
-            <TouchableOpacity
-              key={level.id}
-              style={[
-                styles.optionButton,
-                selectedLevel === level.id && styles.selectedOption,
-              ]}
-              onPress={() => setSelectedLevel(level.id)}
-            >
-              <Text style={styles.optionText}>{level.title}</Text>
-            </TouchableOpacity>
-          ))}
+        <View style={styles.settingItem}>
+          <Text style={styles.settingLabel}>Время позы (сек)</Text>
+          <Picker
+            selectedValue={settings.poseTime}
+            style={styles.picker}
+            onValueChange={(value) => setSettings({ ...settings, poseTime: value })}
+          >
+            {Array.from({ length: 8 }, (_, i) => (i + 2) * 10).map((value) => (
+              <Picker.Item key={value} label={`${value} сек`} value={value} />
+            ))}
+          </Picker>
+        </View>
+
+        <View style={styles.settingItem}>
+          <Text style={styles.settingLabel}>Отдых между сетами (сек)</Text>
+          <Picker
+            selectedValue={settings.setRestTime}
+            style={styles.picker}
+            onValueChange={(value) => setSettings({ ...settings, setRestTime: value })}
+          >
+            {Array.from({ length: 16 }, (_, i) => (i + 3) * 10).map((value) => (
+              <Picker.Item key={value} label={`${value} сек`} value={value} />
+            ))}
+          </Picker>
+        </View>
+
+        <View style={styles.settingItem}>
+          <Text style={styles.settingLabel}>Количество сетов</Text>
+          <Picker
+            selectedValue={settings.sets}
+            style={styles.picker}
+            onValueChange={(value) => setSettings({ ...settings, sets: value })}
+          >
+            {Array.from({ length: 5 }, (_, i) => i + 1).map((value) => (
+              <Picker.Item key={value} label={`${value}`} value={value} />
+            ))}
+          </Picker>
+        </View>
+
+        <View style={styles.summary}>
+          <Text style={styles.summaryText}>
+            Общее время: {Math.floor(calculateTotalTime() / 60)} мин {calculateTotalTime() % 60} сек
+          </Text>
+          <Text style={styles.summaryText}>
+            Калории: {calculateTotalCalories()} ккал
+          </Text>
         </View>
       </View>
 
       <TouchableOpacity
-        style={[
-          styles.createButton,
-          (!selectedType || !selectedDuration || !selectedLevel) && styles.disabledButton,
-        ]}
-        onPress={handleCreate}
-        disabled={!selectedType || !selectedDuration || !selectedLevel}
+        style={[styles.continueButton, !settings.name && styles.continueButtonDisabled]}
+        onPress={() => {
+          if (settings.name) {
+            setSavedWorkouts([...savedWorkouts, { name: settings.name, videos: selectedVideos, settings }]);
+            setStep(0);
+            setSelectedVideos([]);
+            setSettings({
+              name: '',
+              restTime: 30,
+              poseTime: 40,
+              setRestTime: 60,
+              sets: 1,
+            });
+          }
+        }}
+        disabled={!settings.name}
       >
-        <Text style={styles.createButtonText}>Создать тренировку</Text>
+        <Text style={styles.continueButtonText}>Сохранить тренировку</Text>
       </TouchableOpacity>
     </ScrollView>
+  );
+
+  return (
+    <View style={styles.container}>
+      {step === 0 && renderStep0()}
+      {step === 1 && renderStep1()}
+      {step === 2 && renderStep2()}
+      {step === 3 && renderStep3()}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ECE9E4',
+    backgroundColor: '#fff',
   },
-  section: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    marginTop: 12,
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+  plusButton: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#00adf5',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 16,
   },
-  optionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  plusButtonText: {
+    fontSize: 18,
+    color: '#666',
+    marginTop: 8,
   },
-  optionButton: {
-    width: '48%',
-    backgroundColor: '#F5F5F5',
-    borderRadius: 12,
+  stepIndicator: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
     padding: 16,
-    marginBottom: 12,
+    color: '#2d4150',
+  },
+  videoCard: {
+    flexDirection: 'row',
+    padding: 12,
+    backgroundColor: '#fff',
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  videoCardSelected: {
+    backgroundColor: '#e8f7f0',
+    borderColor: '#27ae60',
+    borderWidth: 1,
+  },
+  videoCardDragging: {
+    opacity: 0.5,
+    transform: [{ scale: 1.05 }],
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  thumbnail: {
+    width: 100,
+    height: 70,
+    borderRadius: 8,
+  },
+  videoInfo: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  videoTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2d4150',
+  },
+  videoDescription: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  videoDuration: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 4,
+  },
+  continueButton: {
+    backgroundColor: '#00adf5',
+    padding: 16,
+    margin: 16,
+    borderRadius: 8,
     alignItems: 'center',
   },
-  selectedOption: {
-    backgroundColor: '#4CAF50',
+  continueButtonDisabled: {
+    backgroundColor: '#ccc',
   },
-  optionIcon: {
-    fontSize: 24,
+  continueButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  removeButton: {
+    padding: 8,
+  },
+  settingsContainer: {
+    padding: 16,
+  },
+  settingItem: {
+    marginBottom: 16,
+  },
+  settingLabel: {
+    fontSize: 16,
+    color: '#2d4150',
     marginBottom: 8,
   },
-  optionText: {
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
     fontSize: 16,
-    color: '#333',
   },
-  createButton: {
-    backgroundColor: '#4CAF50',
-    margin: 20,
+  picker: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+  },
+  summary: {
+    backgroundColor: '#f8f9fa',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  summaryText: {
+    fontSize: 16,
+    color: '#2d4150',
+    marginBottom: 8,
+  },
+  workoutsContainer: {
+    flex: 1,
+    width: '100%',
+    paddingHorizontal: 16,
+  },
+  savedWorkoutsList: {
+    flex: 1,
+    width: '100%',
+  },
+  smallPlusButton: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#00adf5',
+    padding: 16,
+    borderRadius: 8,
+    marginTop: 16,
+    marginBottom: 24,
   },
-  disabledButton: {
-    backgroundColor: '#CCCCCC',
+  smallPlusButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8,
   },
-  createButtonText: {
-    color: '#FFFFFF',
+  savedWorkout: {
+    width: '100%',
+    padding: 16,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  savedWorkoutTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
+    color: '#2d4150',
+    marginBottom: 8,
+  },
+  savedWorkoutDetails: {
+    fontSize: 14,
+    color: '#666',
+  },
+  dragHandle: {
+    padding: 8,
+    justifyContent: 'center',
   },
 });
 
-export default CreateWorkoutScreen; 
+export default CreateWorkoutScreen;

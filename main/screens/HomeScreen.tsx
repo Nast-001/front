@@ -13,14 +13,93 @@ type Category = {
   url: string;
 };
 
+const DAILY_WORKOUTS = [
+  {
+    id: '1',
+    title: 'РАСТЯЖКА ДЛЯ\nТЕЛА И УМА',
+    image: require('../../assets/current_workout.png'),
+    duration: '20 мин',
+    calories: 150,
+    exercises: [
+      { 
+        name: 'Наклоны вперед', 
+        duration: 60,
+        videoUrl: 'https://example.com/video1.mp4'
+      },
+      { 
+        name: 'Поза бабочки', 
+        duration: 90,
+        videoUrl: 'https://example.com/video2.mp4'
+      },
+      { 
+        name: 'Скручивания позвоночника', 
+        duration: 60,
+        videoUrl: 'https://example.com/video3.mp4'
+      },
+    ]
+  },
+  {
+    id: '2',
+    title: 'ЙОГА ДЛЯ\nНАЧИНАЮЩИХ',
+    image: require('../../assets/current_workout.png'),
+    duration: '25 мин',
+    calories: 180,
+    exercises: [
+      { 
+        name: 'Поза собаки', 
+        duration: 60,
+        videoUrl: 'https://example.com/video4.mp4'
+      },
+      { 
+        name: 'Поза кошки', 
+        duration: 60,
+        videoUrl: 'https://example.com/video5.mp4'
+      },
+      { 
+        name: 'Поза воина', 
+        duration: 90,
+        videoUrl: 'https://example.com/video6.mp4'
+      },
+    ]
+  },
+  {
+    id: '3',
+    title: 'СИЛОВАЯ\nТРЕНИРОВКА',
+    image: require('../../assets/current_workout.png'),
+    duration: '30 мин',
+    calories: 250,
+    exercises: [
+      { 
+        name: 'Приседания', 
+        duration: 60,
+        videoUrl: 'https://rutube.ru/video/15ad6bb57e98b55e3a3d011a9bbbda7d/?r=wd'
+      },
+      { 
+        name: 'Отжимания', 
+        duration: 45,
+        videoUrl: 'https://rutube.ru/video/15ad6bb57e98b55e3a3d011a9bbbda7d/?r=wd'
+      },
+      { 
+        name: 'Планка', 
+        duration: 60,
+        videoUrl: 'https://rutube.ru/video/15ad6bb57e98b55e3a3d011a9bbbda7d/?r=wd'
+      },
+    ]
+  },
+];
+
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState('Настя');
+  const [currentWorkout, setCurrentWorkout] = useState(DAILY_WORKOUTS[0]);
 
   useEffect(() => {
     fetchCategories();
+    // Выбираем случайную тренировку
+    const randomIndex = Math.floor(Math.random() * DAILY_WORKOUTS.length);
+    setCurrentWorkout(DAILY_WORKOUTS[randomIndex]);
   }, []);
 
   const fetchCategories = async () => {
@@ -191,9 +270,12 @@ const HomeScreen = () => {
   };
 
   const renderCurrentWorkout = () => (
-    <TouchableOpacity style={styles.currentWorkoutCard}>
+    <TouchableOpacity 
+      style={styles.currentWorkoutCard}
+      onPress={() => navigation.navigate('WorkoutDetails', { workout: currentWorkout })}
+    >
       <ImageBackground
-        source={require('../../assets/current_workout.png')}
+        source={currentWorkout.image}
         style={styles.currentWorkoutImage}
         imageStyle={styles.currentWorkoutImageStyle}
         resizeMode="cover"
@@ -202,8 +284,11 @@ const HomeScreen = () => {
           <View style={styles.dayContainer}>
             <Text style={styles.dayText}>ДЕНЬ 1</Text>
           </View>
-          <Text style={styles.workoutTitle}>РАСТЯЖКА ДЛЯ{'\n'}ТЕЛА И УМА</Text>
-          <TouchableOpacity style={styles.playButton}>
+          <Text style={styles.workoutTitle}>{currentWorkout.title}</Text>
+          <TouchableOpacity 
+            style={styles.playButton}
+            onPress={() => navigation.navigate('WorkoutDetails', { workout: currentWorkout })}
+          >
             <Text style={styles.playButtonText}>▶</Text>
           </TouchableOpacity>
         </View>

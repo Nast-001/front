@@ -30,6 +30,7 @@ const TimeScreen = () => {
 
   const handleContinue = async () => {
     if (selectedTime) {
+      let userData;
       try {
         setLoading(true);
         
@@ -39,15 +40,15 @@ const TimeScreen = () => {
           return;
         }
 
-        const userData = {
+        userData = {
           email: formData.email,
           password: formData.password,
           password2: formData.password2,
           name: name,
           gender: gender,
-          age: age ? parseInt(age) : undefined,
-          height: height ? parseInt(height) : undefined,
-          weight: weight ? parseInt(weight) : undefined,
+          age: age && !isNaN(Number(age)) ? parseInt(age) : undefined,
+          height: height && !isNaN(Number(height)) ? parseInt(height) : undefined,
+          weight: weight && !isNaN(Number(weight)) ? parseInt(weight) : undefined,
           workout_duration: selectedTime,
           // Другие поля будут добавлены позже
         };
@@ -70,7 +71,7 @@ const TimeScreen = () => {
         });
       } catch (error: any) {
         console.error('Ошибка регистрации:', error);
-        console.error('Данные запроса:', userData);
+        console.error('Данные запроса:', userData || 'Данные не были сформированы');
         
         let errorMessage = 'Произошла ошибка при регистрации. Пожалуйста, попробуйте еще раз.';
         
