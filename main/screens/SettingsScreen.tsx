@@ -1,7 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text } from '../components/CustomText';
 
 const SettingsScreen = ({ navigation }: { navigation: any }) => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -22,7 +23,7 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={24} color="#2d4150" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Настройки</Text>
+        <Text variant="bold" style={styles.headerTitle}>Настройки</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -85,7 +86,7 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Удалить аккаунт?</Text>
+            <Text variant="bold" style={styles.modalTitle}>Удалить аккаунт?</Text>
             <Text style={styles.modalText}>
               Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя отменить.
             </Text>
@@ -113,7 +114,7 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ECE9E4',
   },
   header: {
     flexDirection: 'row',
@@ -132,6 +133,10 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   settingItem: {
+    margin:3,
+    borderRadius: 10,
+    padding: 16,
+    backgroundColor: '#F7F7F7',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

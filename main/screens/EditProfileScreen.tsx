@@ -75,11 +75,13 @@ const EditProfileScreen = ({ navigation }: { navigation: any }) => {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 0,
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ECE9E4',
   },
   headerBackground: {
-    height: 200,
+    marginTop: -30,
+    height: 170,
     width: '100%',
   },
   header: {
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius:20,
     borderWidth: 3,
     borderColor: '#fff',
   },
@@ -107,17 +109,21 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   content: {
-    flex: 1,
+    backgroundColor: '#ECE9E4',
+    margin: 3,
+    flex: 1,  
     padding: 16,
-    paddingTop: 24,
+    borderRadius: 10,
   },
   fieldContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    marginBottom: 8,
+    backgroundColor: '#ffff',
+    borderRadius: 10,
+    paddingHorizontal: 16,
   },
   fieldLabel: {
     fontSize: 16,

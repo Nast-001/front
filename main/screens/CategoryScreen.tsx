@@ -3,20 +3,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MainTabParamList } from '../navigationTypes';
+import { Lesson } from '../types';
 
 type CategoryScreenRouteProp = RouteProp<MainTabParamList, 'CategoryScreen'>;
 type CategoryScreenNavigationProp = StackNavigationProp<MainTabParamList>;
 
-type Lesson = {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  duration_minutes: number;
-  calories: number;
-  video_file: string;
-  preview_image: string;
-};
+const BASE_URL = 'http://192.168.0.176:8000';
 
 const CategoryScreen = () => {
   const route = useRoute<CategoryScreenRouteProp>();
@@ -91,9 +83,7 @@ const CategoryScreen = () => {
   };
 
   const renderLessonItem = ({ item }: { item: Lesson }) => {
-    // Формируем полный URL для превью
-    const previewUrl = `http://192.168.0.176:8000${item.preview_image}`;
-    console.log('Preview URL:', previewUrl);
+    const previewUrl = `${BASE_URL}${item.preview_image}`;
 
     return (
       <TouchableOpacity 
@@ -108,10 +98,7 @@ const CategoryScreen = () => {
             source={{ uri: previewUrl }}
             style={styles.lessonImage}
             resizeMode="cover"
-            onError={(error) => {
-              console.error('Error loading preview image:', error.nativeEvent);
-              console.log('Failed to load image from URL:', previewUrl);
-            }}
+            defaultSource={require('../../assets/default-avatar.png')}
           />
         </View>
         <View style={styles.lessonContent}>

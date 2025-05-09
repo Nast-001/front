@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.100:8000/api/register/'; // Измените на ваш URL API
+const API_URL = 'http://192.168.0.176:8000/api/register/'; // Измените на ваш URL API
 
 // Интерфейсы для типизации данных
 interface UserData {

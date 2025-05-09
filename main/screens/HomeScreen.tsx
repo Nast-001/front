@@ -285,6 +285,14 @@ const HomeScreen = () => {
             <Text style={styles.dayText}>ДЕНЬ 1</Text>
           </View>
           <Text style={styles.workoutTitle}>{currentWorkout.title}</Text>
+          <View style={styles.workoutInfoContainer}>
+            <View style={styles.workoutInfoItem}>
+              <Text style={styles.workoutInfoText}>{currentWorkout.duration}</Text>
+            </View>
+            <View style={styles.workoutInfoItem}>
+              <Text style={styles.workoutInfoText}>{currentWorkout.calories} ккал</Text>
+            </View>
+          </View>
           <TouchableOpacity 
             style={styles.playButton}
             onPress={() => navigation.navigate('WorkoutDetails', { workout: currentWorkout })}
@@ -342,7 +350,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#ECE9E4',
     padding: 16,
   },
   greeting: {
@@ -393,14 +401,30 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
   },
+  workoutInfoContainer: {
+    flexDirection: 'row',
+    marginTop: 8,
+    gap: 8,
+  },
+  workoutInfoItem: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  workoutInfoText: {
+    color: '#333',
+    fontWeight: '600',
+    fontSize: 12,
+  },
   playButton: {
     position: 'absolute',
-    right: 16,
-    bottom: 16,
-    backgroundColor: '#FFFFFF',
-    width: 40,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#87D0B2',
+    width: 60,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -413,8 +437,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   playButtonText: {
-    color: '#333',
-    fontSize: 20,
+    marginBottom: 0,
+    position: 'absolute',
+    top: -4,
+    left: 16,
+    color: '#ffffff',
+    fontSize: 30,
   },
   sectionTitle: {
     fontSize: 20,

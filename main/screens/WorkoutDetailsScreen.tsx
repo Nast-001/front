@@ -144,7 +144,7 @@ const WorkoutDetailsScreen = ({ route, navigation }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ECE9E4',
   },
   header: {
     height: 300,

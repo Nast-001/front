@@ -107,9 +107,9 @@ const CreateWorkoutScreen = () => {
       {savedWorkouts.length === 0 ? (
         <>
           <TouchableOpacity style={styles.plusButton} onPress={() => setStep(1)}>
-            <Feather name="plus" size={48} color="#fff" />
+            <Feather name="plus" size={48} color="black" backgroundColor = "#ECE9E4" />
           </TouchableOpacity>
-          <Text style={styles.plusButtonText}>Создать новую тренировку</Text>
+          <Text style={styles.plusButtonText}>Создай свою индивидуальную тренировку из любимых асан</Text>
         </>
       ) : (
         <View style={styles.workoutsContainer}>
@@ -127,8 +127,7 @@ const CreateWorkoutScreen = () => {
             style={styles.smallPlusButton} 
             onPress={() => setStep(1)}
           >
-            <Feather name="plus" size={24} color="#fff" />
-            <Text style={styles.smallPlusButtonText}>Новая тренировка</Text>
+            <Feather name="plus" size={24} color="black" />
           </TouchableOpacity>
         </View>
       )}
@@ -151,7 +150,6 @@ const CreateWorkoutScreen = () => {
             <Image source={{ uri: video.thumbnailUrl }} style={styles.thumbnail} />
             <View style={styles.videoInfo}>
               <Text style={styles.videoTitle}>{video.title}</Text>
-              <Text style={styles.videoDescription}>{video.description}</Text>
               <Text style={styles.videoDuration}>{Math.floor(video.duration / 60)} мин</Text>
             </View>
           </TouchableOpacity>
@@ -190,7 +188,6 @@ const CreateWorkoutScreen = () => {
               <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbnail} />
               <View style={styles.videoInfo}>
                 <Text style={styles.videoTitle}>{item.title}</Text>
-                <Text style={styles.videoDescription}>{item.description}</Text>
               </View>
               <View style={styles.dragHandle}>
                 <Feather name="menu" size={24} color="#666" />
@@ -276,12 +273,16 @@ const CreateWorkoutScreen = () => {
         </View>
 
         <View style={styles.summary}>
-          <Text style={styles.summaryText}>
-            Общее время: {Math.floor(calculateTotalTime() / 60)} мин {calculateTotalTime() % 60} сек
-          </Text>
-          <Text style={styles.summaryText}>
-            Калории: {calculateTotalCalories()} ккал
-          </Text>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Общее время:</Text>
+            <Text style={styles.summaryValue}>
+              {Math.floor(calculateTotalTime() / 60)} мин {calculateTotalTime() % 60} сек
+            </Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Калории:</Text>
+            <Text style={styles.summaryValue}>{calculateTotalCalories()} ккал</Text>
+          </View>
         </View>
       </View>
 
@@ -321,25 +322,30 @@ const CreateWorkoutScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ECE9E4',
   },
   centerContainer: {
     flex: 1,
+    backgroundColor: '#ECE9E4',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
   plusButton: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#00adf5',
+    backgroundColor: '#ECE9E4',
+    borderWidth: 3,
+    borderColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
   plusButtonText: {
+    opacity: 1,
     fontSize: 18,
+    width: 300,
+    textAlign: 'center',
     color: '#666',
     marginTop: 8,
   },
@@ -353,6 +359,7 @@ const styles = StyleSheet.create({
   videoCard: {
     flexDirection: 'row',
     padding: 12,
+    alignItems: 'center',
     backgroundColor: '#fff',
     marginHorizontal: 16,
     marginVertical: 8,
@@ -364,7 +371,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   videoCardSelected: {
-    backgroundColor: '#e8f7f0',
+    backgroundColor: '#87D0B2',
     borderColor: '#27ae60',
     borderWidth: 1,
   },
@@ -424,13 +431,22 @@ const styles = StyleSheet.create({
   },
   settingItem: {
     marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F7F7F7',
+    padding: 9,
+    borderRadius: 8,
+    justifyContent: 'space-between',
   },
   settingLabel: {
     fontSize: 16,
     color: '#2d4150',
-    marginBottom: 8,
+    flex: 1,
+    
   },
   input: {
+    flex: 1,
+    backgroundColor: '#F7F7F7',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
@@ -438,9 +454,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   picker: {
+    flex: 1,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
+    backgroundColor: '#F7F7F7',
   },
   summary: {
     backgroundColor: '#f8f9fa',
@@ -448,10 +466,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 16,
   },
-  summaryText: {
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  summaryLabel: {
     fontSize: 16,
     color: '#2d4150',
-    marginBottom: 8,
+  },
+  summaryValue: {
+    fontSize: 16,
+    color: '#519076',
+    fontWeight: 'bold',
   },
   workoutsContainer: {
     flex: 1,
@@ -463,14 +491,17 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   smallPlusButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    width: 60,
+    height: 60,
+    borderRadius: 60,
+    backgroundColor: '#ECE9E4',
+    borderWidth: 3,
+    borderColor: 'black',
     justifyContent: 'center',
-    backgroundColor: '#00adf5',
-    padding: 16,
-    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 16,
     marginTop: 16,
-    marginBottom: 24,
+    alignSelf: 'center',
   },
   smallPlusButtonText: {
     color: '#fff',

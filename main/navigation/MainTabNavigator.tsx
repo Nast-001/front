@@ -4,10 +4,12 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { MainTabParamList } from '../navigationTypes';
 import CategoryScreen from '../screens/CategoryScreen';
-import CreateWorkoutScreen from '../screens/CreateWorkoutScreen';
 import HomeScreen from '../screens/HomeScreen';
 import LessonScreen from '../screens/LessonScreen';
+import NewsDetailScreen from '../screens/NewsDetailScreen';
+import NewsScreen from '../screens/NewsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import CreateWorkoutScreen from '../screens/CreateWorkoutScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -16,7 +18,7 @@ const MainTabNavigator = () => {
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#F7F7F7',
           borderTopWidth: 1,
           borderTopColor: '#E0E0E0',
           height: 60,
@@ -25,10 +27,9 @@ const MainTabNavigator = () => {
         },
         tabBarItemStyle: {
           padding: 4,
-          marginRight: -70,
         },
         tabBarLabelStyle: {
-          marginRight: -15,
+          fontSize: 12,
         },
         tabBarActiveTintColor: '#4CAF50',
         tabBarInactiveTintColor: '#666666',
@@ -40,13 +41,13 @@ const MainTabNavigator = () => {
           fontSize: 20,
           fontWeight: '600',
         },
+        headerShown: false,
       }}
     >
       <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
-          title: 'Главная',
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconContainer}>
               <MaterialCommunityIcons name="home" size={28} color={color} />
@@ -55,13 +56,13 @@ const MainTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="CreateWorkout"
-        component={CreateWorkoutScreen}
+        name="NewsScreen"
+        component={NewsScreen}
         options={{
-          title: 'Создать',
+          title: 'Новости',
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="plus-circle-outline" size={28} color={color} />
+              <MaterialCommunityIcons name="newspaper" size={28} color={color} />
             </View>
           ),
         }}
@@ -83,7 +84,7 @@ const MainTabNavigator = () => {
         component={CategoryScreen}
         options={{
           title: 'Категория',
-          tabBarButton: () => null, // Скрываем вкладку из таб-бара
+          tabBarButton: () => null,
         }}
       />
       <Tab.Screen
@@ -91,7 +92,15 @@ const MainTabNavigator = () => {
         component={LessonScreen}
         options={{
           title: 'Урок',
-          tabBarButton: () => null, // Скрываем вкладку из таб-бара
+          tabBarButton: () => null,
+        }}
+      />
+      <Tab.Screen
+        name="NewsDetail"
+        component={NewsDetailScreen}
+        options={{
+          title: 'Новость',
+          tabBarButton: () => null,
         }}
       />
     </Tab.Navigator>
@@ -100,6 +109,7 @@ const MainTabNavigator = () => {
 
 const styles = StyleSheet.create({
   iconContainer: {
+    backgroundColor: '#F7F7F7',
     width: 32,
     height: 32,
     justifyContent: 'center',

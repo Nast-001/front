@@ -1,5 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { LogBox, StyleSheet } from 'react-native';
@@ -9,6 +11,10 @@ import MainTabNavigator from './main/navigation/MainTabNavigator';
 import AchievementsScreen from './main/screens/AchievementsScreen';
 import CreateWorkoutScreen from './main/screens/CreateWorkoutScreen';
 import EditProfileScreen from './main/screens/EditProfileScreen';
+import FavoriteLessonsScreen from './main/screens/FavoriteLessonsScreen';
+import LastLesson from './main/screens/LastLesson';
+import NewsDetailScreen from './main/screens/NewsDetailScreen.tsx';
+import NewsScreen from './main/screens/NewsScreen.tsx';
 import ProfileScreen from './main/screens/ProfileScreen';
 import SettingsScreen from './main/screens/SettingsScreen';
 import WorkoutDetailsScreen from './main/screens/WorkoutDetailsScreen';
@@ -35,6 +41,9 @@ LogBox.ignoreLogs([
   'ColorPropType will be removed',
 ]);
 
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
 const Stack = createStackNavigator<RootStackParamList>();
 
 const styles = StyleSheet.create({
@@ -44,6 +53,21 @@ const styles = StyleSheet.create({
 });
 
 const AppNavigator = () => {
+  const [fontsLoaded] = useFonts({
+    'Lora': require('./assets/fonts/Lora.ttf'),
+    'Lora-Italic': require('./assets/fonts/Lora-Italic.ttf'),
+  });
+
+  React.useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
@@ -77,9 +101,19 @@ const AppNavigator = () => {
               <Stack.Screen name="Profile" component={ProfileScreen} />
               <Stack.Screen name="EditProfile" component={EditProfileScreen} />
               <Stack.Screen name="Settings" component={SettingsScreen} />
+              <Stack.Screen name="LastLesson" component={LastLesson} />
               <Stack.Screen name="Achievements" component={AchievementsScreen} />
               <Stack.Screen name="CreateWorkout" component={CreateWorkoutScreen} />
               <Stack.Screen name="WorkoutDetails" component={WorkoutDetailsScreen} />
+              <Stack.Screen name="NewsDetail" component={NewsDetailScreen} />
+              <Stack.Screen name="NewsScreen" component={NewsScreen} />
+              <Stack.Screen 
+                name="FavoriteLessonsScreen" 
+                component={FavoriteLessonsScreen}
+                options={{
+                  headerShown: false
+                }}
+              />
             </Stack.Navigator>
             <StatusBar style="auto" />
           </NavigationContainer>

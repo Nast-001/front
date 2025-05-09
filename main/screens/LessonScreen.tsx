@@ -5,6 +5,7 @@ import { ResizeMode, Video } from 'expo-av';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  BackHandler,
   Dimensions,
   Platform,
   ScrollView,
@@ -13,7 +14,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import ExitLessonModal from '../components/ExitLessonModal';
 import { MainTabParamList } from '../navigationTypes';
+import { isLessonFavorite, removeFavoriteLesson, saveFavoriteLesson } from '../storage/favoriteLessons';
+import { saveLessonToHistory } from '../storage/lessonHistory';
 
 type LessonScreenRouteProp = RouteProp<MainTabParamList, 'LessonScreen'>;
 type LessonScreenNavigationProp = StackNavigationProp<MainTabParamList, 'LessonScreen'>;
@@ -25,50 +29,81 @@ const LessonScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string>('');
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const videoRef = useRef<Video>(null);
 
+  // Handle hardware back button
   useEffect(() => {
-    // Формируем URL для streaming endpoint
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (navigation.isFocused() && !route.params?.fromHistory) {
+        setShowExitModal(true);
+        return true;
+      }
+      return false;
+    });
+
+    return () => backHandler.remove();
+  }, [navigation, route.params?.fromHistory]);
+
+  useEffect(() => {
     const videoFileName = lesson.video_file.split('/').pop();
     if (!videoFileName) {
       setError('Неверный формат видеофайла');
+      setIsLoading(false);
       return;
     }
-    const streamUrl = `http://192.168.0.176:8000/api/lessons/stream/${encodeURIComponent(videoFileName)}`;
+    
+    const baseUrl = 'http://192.168.0.176:8000';
+    const streamUrl = `${baseUrl}/api/lessons/stream/${encodeURIComponent(videoFileName)}`;
     setVideoUrl(streamUrl);
     
-    // Проверяем доступность видео
     const checkVideo = async () => {
       try {
-        console.log('Checking video availability...');
-        const response = await fetch(streamUrl);
-        console.log('Video check response:', {
-          status: response.status,
-          statusText: response.statusText,
-          headers: Object.fromEntries(response.headers.entries())
-        });
+        setIsLoading(true);
+        setError(null);
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // First check with HEAD request
+        const headResponse = await fetch(streamUrl, { method: 'HEAD' });
+        if (!headResponse.ok) {
+          throw new Error(`Video unavailable. Status: ${headResponse.status}`);
         }
+        
+        // Then verify content type
+        const contentType = headResponse.headers.get('content-type');
+        if (!contentType?.startsWith('video/')) {
+          throw new Error('Invalid video content type');
+        }
+        
+        // If we got here, video should be available
+        setIsLoading(false);
       } catch (error) {
         console.error('Error checking video:', error);
         setError('Не удалось загрузить видео. Пожалуйста, проверьте подключение к интернету.');
+        setIsLoading(false);
       }
     };
+    
     checkVideo();
   }, [lesson.video_file]);
 
+  // Проверяем, является ли урок избранным
+  useEffect(() => {
+    const checkFavorite = async () => {
+      const favorite = await isLessonFavorite(lesson.id);
+      setIsFavorite(favorite);
+    };
+    checkFavorite();
+  }, [lesson.id]);
+
   // Пауза видео при потере фокуса
-  useFocusEffect(
-    React.useCallback(() => {
-      return () => {
-        if (videoRef.current) {
-          videoRef.current.pauseAsync();
-        }
-      };
-    }, [])
-  );
+  useFocusEffect(() => {
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.pauseAsync();
+      }
+    };
+  });
 
   const handleVideoError = (error: string) => {
     console.error('Ошибка воспроизведения видео:', error);
@@ -85,14 +120,63 @@ const LessonScreen = () => {
       : `${mins} мин`;
   };
 
+  const handleExit = async (saveLesson: boolean) => {
+    if (saveLesson) {
+      try {
+        await saveLessonToHistory(lesson);
+      } catch (error) {
+        console.error('Error saving lesson to history:', error);
+      }
+    }
+    setShowExitModal(false);
+    
+    if (route.params?.fromHistory) {
+      navigation.navigate('LastLesson');
+    } else {
+      navigation.goBack();
+    }
+  };
+
+  const toggleFavorite = async () => {
+    try {
+      if (isFavorite) {
+        await removeFavoriteLesson(lesson.id);
+      } else {
+        await saveFavoriteLesson(lesson);
+      }
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity 
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Ionicons name="arrow-back" size={24} color="#333" />
-      </TouchableOpacity>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => {
+            if (route.params?.fromHistory) {
+              navigation.navigate('LastLesson');
+            } else {
+              setShowExitModal(true);
+            }
+          }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.favoriteButton}
+          onPress={toggleFavorite}
+        >
+          <Ionicons 
+            name={isFavorite ? "heart" : "heart-outline"} 
+            size={24} 
+            color={isFavorite ? "#ff6b6b" : "#333"} 
+          />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.videoContainer}>
         {isLoading && (
@@ -144,6 +228,12 @@ const LessonScreen = () => {
 
         <Text style={styles.description}>{lesson.description}</Text>
       </View>
+
+      <ExitLessonModal
+        visible={showExitModal}
+        onClose={() => setShowExitModal(false)}
+        onExit={handleExit}
+      />
     </ScrollView>
   );
 };
@@ -153,11 +243,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === 'ios' ? 60 : 20,
+    paddingBottom: 16,
+  },
   backButton: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 60 : 20,
-    left: 20,
-    zIndex: 10,
+    padding: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 20,
+  },
+  favoriteButton: {
     padding: 8,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 20,
