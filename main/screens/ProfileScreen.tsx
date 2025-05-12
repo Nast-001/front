@@ -5,6 +5,10 @@ import { Alert, Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TextInpu
 import { Calendar } from 'react-native-calendars';
 import { LineChart } from 'react-native-chart-kit';
 import { Circle as SvgCircle, Svg as SvgComponent } from 'react-native-svg';
+import IndividualIcon from '../../assets/individual.svg';
+import ClockIcon from '../../assets/clock.svg';
+import HeartIcon from '../../assets/heart.svg';
+import SettingsIcon from '../../assets/settings.svg';
 
 type RootStackParamList = {
   Achievements: { date: string };
@@ -42,7 +46,7 @@ const CustomProgress = ({ value, maxValue, title, color }: { value: number; maxV
           cx={radius}
           cy={radius}
           r={radius - strokeWidth / 2}
-          stroke="#f0f0f0"
+          stroke="rgba(255, 255, 255, 0.1)"
           strokeWidth={strokeWidth}
           fill="none"
         />
@@ -55,9 +59,12 @@ const CustomProgress = ({ value, maxValue, title, color }: { value: number; maxV
           fill="none"
           strokeDasharray={`${progress} ${circumference}`}
           transform={`rotate(-90 ${radius} ${radius})`}
+          strokeOpacity={0.7}
         />
       </SvgComponent>
-      <Text style={[styles.progressValue, { color }]}>{value}</Text>
+      <View style={[styles.progressValueContainer, { width: radius * 2, height: radius * 2 }]}>
+        <Text style={styles.progressValue}>{value}</Text>
+      </View>
       <Text style={styles.progressTitle}>{title}</Text>
     </View>
   );
@@ -216,25 +223,25 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
             style={styles.iconButton}
             onPress={() => navigation.navigate('LastLesson')}
           >
-            <Feather name="clock" size={24} color="#2d4150" />
+            <ClockIcon width={24} height={24} fill="#2d4150" />
             <Text style={styles.iconText}>История</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('CreateWorkout')}>
-            <Feather name="plus" size={24} color="#2d4150" />
+            <IndividualIcon width={24} height={24} fill="#2d4150" />
             <Text style={styles.iconText}>Индивидуальное</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.iconButton}
             onPress={() => navigation.navigate('FavoriteLessonsScreen')}
           >
-            <Feather name="heart" size={24} color="#2d4150" />
+            <HeartIcon width={24} height={24} fill="#2d4150" />
             <Text style={styles.iconText}>Избранное</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.iconButton}
             onPress={() => navigation.navigate('Settings')}
           >
-            <Feather name="settings" size={24} color="#2d4150" />
+            <SettingsIcon width={24} height={24} fill="#2d4150" />
             <Text style={styles.iconText}>Настройки</Text>
           </TouchableOpacity>
         </View>
@@ -458,10 +465,9 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: 24,
-    fontWeight: 'bold',
     color: '#2d4150',
     marginBottom: 4,
-    fontFamily: 'Lora',
+    fontFamily: 'Lora-Bold',
   },
   statLabel: {
     fontSize: 14,
@@ -536,7 +542,6 @@ const styles = StyleSheet.create({
   },
   weightValue: {
     fontSize: 18,
-    fontWeight: 'bold',
     color: '#2d4150',
     fontFamily: 'Lora',
   },
@@ -551,11 +556,16 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 16,
   },
+  progressValueContainer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   progressValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 8,
     fontFamily: 'Lora',
+    color: '#000000',
   },
   progressTitle: {
     fontSize: 14,
@@ -575,7 +585,6 @@ const styles = StyleSheet.create({
   addWeightButtonText: {
     color: 'black',
     fontSize: 16,
-    fontWeight: 'bold',
     fontFamily: 'Lora',
   },
   modalContainer: {

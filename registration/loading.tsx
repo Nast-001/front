@@ -89,13 +89,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#ECE9E4',
+    fontFamily: 'Lora',
+
   },
   text: {
     fontSize: 30,
-    fontWeight: 'bold',
     marginVertical: 20,
     textAlign: 'center',
     color: '#333',
+    fontFamily: 'Lora-Bold',
+
   },
   imageContainer: {
     width: 300,
@@ -114,6 +117,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     textAlign: 'center',
     color: '#333',
+    fontFamily: 'Lora',
+
   },
   loadingPlaceholder: {
     justifyContent: 'center',

@@ -72,12 +72,15 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#ECE9E4',
     justifyContent: 'space-between',
+    fontFamily: 'Lora',
+
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
     textAlign: 'center',
     color: '#333',
+    fontFamily: 'Lora-Bold',
+
   },
   progressContainer: {
     flexDirection: 'row',
@@ -98,9 +101,9 @@ const styles = StyleSheet.create({
   },
   questionText: {
     fontSize: 24,
-  
+    fontFamily: 'Lora-Bold',
+
     textAlign: 'center',
-    fontWeight: 'bold',
   },
   optionsContainer: {
     flex: 1,
@@ -122,6 +125,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     marginLeft: 10,
+    fontFamily: 'Lora',
+
   },
   continueButton: {
     backgroundColor: '#4D4D4D',
@@ -137,6 +142,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'Lora',
+
   },
 });
 

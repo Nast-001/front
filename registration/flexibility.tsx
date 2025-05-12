@@ -154,13 +154,16 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#ECE9E4',
+    fontFamily: 'Lora',
+
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
     color: '#333',
+    fontFamily: 'Lora-Bold',
+
   },
   progressContainer: {
     flexDirection: 'row',
@@ -185,6 +188,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#333',
     fontWeight: '600',
+    fontFamily: 'Lora',
+
   },
   optionsContainer: {
     flex: 1,
@@ -213,10 +218,14 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontWeight: '500',
     paddingLeft: 15,
+    fontFamily: 'Lora',
+
   },
   selectedOptionText: {
     color: '#2E7D32',
     fontWeight: '600',
+    fontFamily: 'Lora',
+
   },
   card: {
     backgroundColor: '#FAE596',
@@ -229,6 +238,8 @@ const styles = StyleSheet.create({
   cardText: {
     color: '#333',
     fontSize: 16,
+    fontFamily: 'Lora',
+
   },
   continueButton: {
     backgroundColor: '#4D4D4D',
@@ -243,6 +254,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'Lora',
+
   },
   buttonContainer: {
     marginTop: 'auto',

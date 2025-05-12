@@ -111,7 +111,7 @@ const BodyAreasScreen = ({ navigation, route }: Props) => {
                 <Checkbox
                   value={isAreaSelected(area)}
                   onValueChange={() => {}}
-                  color={isAreaSelected(area) ? '#007AFF' : '#519076'}
+                  color={isAreaSelected(area) ? '#519076' : '#519076'}
                   style={styles.checkbox}
                   disabled={isAreaDisabled(area)}
                 />
@@ -137,6 +137,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#ECE9E4',
+    fontFamily: 'Lora',
+
   },
   progressContainer: {
     flexDirection: 'row',
@@ -160,12 +162,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
+    fontFamily: 'Lora',
+
   },
   subtitle: {
     fontSize: 16,
     color: '#666',
     marginBottom: 30,
     textAlign: 'center',
+    fontFamily: 'Lora',
+
   },
   contentContainer: {
     flexDirection: 'row',
@@ -181,6 +187,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   checkboxContainer: {
+    fontFamily: 'Lora',
+
     flex: 1,
     marginLeft: 20,
   },
@@ -194,11 +202,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     justifyContent: 'space-between',
+    fontFamily: 'Lora',
+
   },
   checkbox: {
     marginLeft: 8,
     width: 24,
     height: 24,
+    fontFamily: 'Lora',
+
     
   },
   checkboxLabel: {
@@ -207,6 +219,8 @@ const styles = StyleSheet.create({
   },
   disabledText: {
     color: '#AAA',
+    fontFamily: 'Lora',
+
   },
   button: {
     backgroundColor: '#4D4D4D',
@@ -214,6 +228,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
+    fontFamily: 'Lora',
+
   },
   disabledButton: {
     backgroundColor: '#4D4D4D',
@@ -222,13 +238,16 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Lora',
+
   },
   touchableArea: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
+    fontFamily: 'Lora',
+
   },
 });
 

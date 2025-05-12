@@ -4,6 +4,11 @@ import { Checkbox } from 'expo-checkbox';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
+import Goal1Icon from '../assets/goal1.svg';
+import Goal2Icon from '../assets/goal2.svg';
+import Goal3Icon from '../assets/goal3.svg';
+import Goal4Icon from '../assets/goal4.svg';
+import Goal5Icon from '../assets/goal5.svg';
 
 type GoalsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GoalsScreen'>;
 type GoalsScreenRouteProp = RouteProp<RootStackParamList, 'GoalsScreen'>;
@@ -19,11 +24,11 @@ const GoalsScreen = ({ navigation, route }: Props) => {
   const gender = route.params?.gender;
 
   const goals = [
-    { text: "Изучение основы йоги", icon: require('../assets/goal1.svg') },
-    { text: "Снижение стресса", icon: require('../assets/goal2.svg') },
-    { text: "Увеличение силы", icon: require('../assets/goal3.svg') },
-    { text: "Снижение веса", icon: require('../assets/goal4.svg') },
-    { text: "Улучшение гибкости", icon: require('../assets/goal5.svg') }
+    { text: "Изучение основы йоги", icon: Goal1Icon },
+    { text: "Снижение стресса", icon: Goal2Icon },
+    { text: "Увеличение силы", icon: Goal3Icon },
+    { text: "Снижение веса", icon: Goal4Icon },
+    { text: "Улучшение гибкости", icon: Goal5Icon }
   ];
 
   const toggleGoal = (goal: string) => {
@@ -64,7 +69,7 @@ const GoalsScreen = ({ navigation, route }: Props) => {
             onPress={() => toggleGoal(goal.text)}
           >
             <View style={styles.iconContainer}>
-              <Image source={goal.icon} style={styles.icon} />
+              <goal.icon width={24} height={24} />
             </View>
             <Text style={styles.checkboxLabel}>{goal.text}</Text>
             <Checkbox
@@ -96,6 +101,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#ECE9E4',
+    fontFamily: 'Lora',
+
   },
   progressContainer: {
     flexDirection: 'row',
@@ -120,12 +127,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 20,
     textAlign: 'center',
+    fontFamily: 'Lora-SemiBold',
   },
   subtitle: {
     fontSize: 16,
     color: '#666',
     marginBottom: 30,
     textAlign: 'center',
+    fontFamily: 'Lora',
+
   },
   checkboxContainer: {
     flex: 1,
@@ -135,7 +145,7 @@ const styles = StyleSheet.create({
   checkboxWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 10,
     borderWidth: 1,
     borderColor: '#E0E0E0',
     backgroundColor: '#F7F7F7',
@@ -170,6 +180,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 'auto',
+    
   },
   disabledButton: {
     backgroundColor: '#4D4D4D',
@@ -178,7 +189,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Lora',
   },
 });
 

@@ -1,4 +1,3 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -10,6 +9,10 @@ import NewsDetailScreen from '../screens/NewsDetailScreen';
 import NewsScreen from '../screens/NewsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import CreateWorkoutScreen from '../screens/CreateWorkoutScreen';
+
+import HomeIcon from '../../assets/home.svg';
+import NewspaperIcon from '../../assets/newspaper.svg';
+import AccountIcon from '../../assets/account.svg';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -42,6 +45,7 @@ const MainTabNavigator = () => {
           fontWeight: '600',
         },
         headerShown: false,
+        tabBarShowLabel: false,
       }}
     >
       <Tab.Screen
@@ -50,7 +54,7 @@ const MainTabNavigator = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="home" size={28} color={color} />
+              <HomeIcon width={28} height={28} fill={color} />
             </View>
           ),
         }}
@@ -62,7 +66,7 @@ const MainTabNavigator = () => {
           title: 'Новости',
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="newspaper" size={28} color={color} />
+              <NewspaperIcon width={28} height={28} fill={color} />
             </View>
           ),
         }}
@@ -74,7 +78,7 @@ const MainTabNavigator = () => {
           title: 'Профиль',
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="account" size={28} color={color} />
+              <AccountIcon width={28} height={28} fill={color} />
             </View>
           ),
         }}

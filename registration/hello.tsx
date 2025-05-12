@@ -62,6 +62,9 @@ const HelloScreen = () => {
         resizeMode="contain"
       />
       
+      <Text style={styles.title}>
+        {isLogin ? 'Вход' : 'Регистрация'}
+      </Text>
 
       <TextInput
         style={styles.input}
@@ -123,11 +126,13 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'flex-start',
     backgroundColor: '#ECE9E4',
+    fontFamily: 'Lora',
+
   },
   logo: {
     width: '100%',
     height: 250,
-    marginBottom: 40,
+    marginBottom: 0,
   },
   loadImage: {
     width: '100%',
@@ -135,10 +140,11 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   title: {
-    fontSize: 24,
+    fontSize: 40,
     fontFamily: 'Lora',
     marginBottom: 30,
     textAlign: 'center',
+    
   },
   input: {
     borderWidth: 1,
@@ -150,7 +156,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Lora',
   },
   button: {
-    padding: 15,
+    padding: 10,
     borderRadius: 8,
     marginTop: 10,
     width: '100%',
@@ -179,6 +185,7 @@ const styles = StyleSheet.create({
     borderColor: '#87D0B2',
   },
   switchButton: {
+    borderRadius: 8,
     marginTop: 20,
     width: '100%',
     height: 50,

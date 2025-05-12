@@ -270,38 +270,47 @@ const HomeScreen = () => {
   };
 
   const renderCurrentWorkout = () => (
-    <TouchableOpacity 
-      style={styles.currentWorkoutCard}
-      onPress={() => navigation.navigate('WorkoutDetails', { workout: currentWorkout })}
-    >
-      <ImageBackground
-        source={currentWorkout.image}
-        style={styles.currentWorkoutImage}
-        imageStyle={styles.currentWorkoutImageStyle}
-        resizeMode="cover"
-      >
-        <View style={[styles.currentWorkoutContent, styles.overlay]}>
-          <View style={styles.dayContainer}>
-            <Text style={styles.dayText}>ДЕНЬ 1</Text>
-          </View>
-          <Text style={styles.workoutTitle}>{currentWorkout.title}</Text>
-          <View style={styles.workoutInfoContainer}>
-            <View style={styles.workoutInfoItem}>
-              <Text style={styles.workoutInfoText}>{currentWorkout.duration}</Text>
-            </View>
-            <View style={styles.workoutInfoItem}>
-              <Text style={styles.workoutInfoText}>{currentWorkout.calories} ккал</Text>
-            </View>
-          </View>
-          <TouchableOpacity 
-            style={styles.playButton}
-            onPress={() => navigation.navigate('WorkoutDetails', { workout: currentWorkout })}
-          >
-            <Text style={styles.playButtonText}>▶</Text>
-          </TouchableOpacity>
+    <View>
+      <View style={styles.topBar}>
+        <View style={styles.dayContainer}>
+          <Text style={styles.arrow}>◀</Text>
+          <Text style={styles.dayText}>ДЕНЬ 1</Text>
+          <Text style={styles.arrow}>▶</Text>
         </View>
-      </ImageBackground>
-    </TouchableOpacity>
+        <View style={styles.planContainer}>
+          <Text style={styles.planText}>твой план</Text>
+        </View>
+      </View>
+      <TouchableOpacity 
+        style={styles.currentWorkoutCard}
+        onPress={() => navigation.navigate('WorkoutDetails', { workout: currentWorkout })}
+      >
+        <ImageBackground
+          source={currentWorkout.image}
+          style={styles.currentWorkoutImage}
+          imageStyle={styles.currentWorkoutImageStyle}
+          resizeMode="cover"
+        >
+          <View style={[styles.currentWorkoutContent, styles.overlay]}>
+            <Text style={styles.workoutTitle}>{currentWorkout.title}</Text>
+            <View style={styles.workoutInfoContainer}>
+              <View style={styles.workoutInfoItem}>
+                <Text style={styles.workoutInfoText}>{currentWorkout.duration}</Text>
+              </View>
+              <View style={styles.workoutInfoItem}>
+                <Text style={styles.workoutInfoText}>{currentWorkout.calories} ккал</Text>
+              </View>
+            </View>
+            <TouchableOpacity 
+              style={styles.playButton}
+              onPress={() => navigation.navigate('WorkoutDetails', { workout: currentWorkout })}
+            >
+              <Text style={styles.playButtonText}>▶</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+      </TouchableOpacity>
+    </View>
   );
 
   const renderCategoryItem = ({ item }: { item: Category }) => (
@@ -361,9 +370,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Lora',
   },
   currentWorkoutCard: {
-    height: 200,
+    height: 240,
     marginBottom: 24,
-    borderRadius: 12,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#f0f0f0',
   },
@@ -382,41 +392,67 @@ const styles = StyleSheet.create({
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    height: 50,
+    borderTopLeftRadius: 12,
+    paddingLeft: 10,
+    borderTopRightRadius: 12,
+  },
   dayContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    alignSelf: 'flex-start',
-    marginBottom: 8,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  arrow: {
+    color: '#333',
+    fontSize: 12,
   },
   dayText: {
+    color: '#333',
+    fontWeight: '600',
+    fontFamily: 'Lora',
+    fontSize: 16,
+  },
+  planContainer: {
+    height: 50,
+    backgroundColor: 'rgba(128, 128, 128, 0.3)',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    alignItems: 'center',
+  },
+  planText: {
     color: '#333',
     fontWeight: '600',
     fontFamily: 'Lora',
   },
   workoutTitle: {
     color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 18,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
     fontFamily: 'Lora',
+    marginBottom: 8,
   },
   workoutInfoContainer: {
     flexDirection: 'row',
-    marginTop: 8,
     gap: 8,
   },
   workoutInfoItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: 'rgba(128, 128, 128, 0.3)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
   },
   workoutInfoText: {
-    color: '#333',
+    color: '#FFFFFF',
     fontWeight: '600',
     fontSize: 12,
     fontFamily: 'Lora',

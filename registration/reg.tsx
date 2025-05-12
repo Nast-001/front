@@ -3,6 +3,7 @@ import { NavigationProp, RouteProp } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type Props = {
   navigation: NavigationProp<RootStackParamList, 'Regist'>;
@@ -63,21 +64,30 @@ const RegistPage = ({ navigation, route }: Props) => {
             style={[styles.button, selectedGender === 'female' && styles.selectedButton]} 
             onPress={() => handleGenderSelect('female')}
           >
-            <Text style={styles.buttonText}>Женский</Text>
+            <View style={styles.buttonContent}>
+              <Icon name="gender-female" size={24} color="black" style={styles.genderIcon} />
+              <Text style={styles.buttonText}>Женский</Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={[styles.button, selectedGender === 'male' && styles.selectedButton]} 
             onPress={() => handleGenderSelect('male')}
           >
-            <Text style={styles.buttonText}>Мужской</Text>
+            <View style={styles.buttonContent}>
+              <Icon name="gender-male" size={24} color="black" style={styles.genderIcon} />
+              <Text style={styles.buttonText}>Мужской</Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={[styles.button, selectedGender === 'nonbinary' && styles.selectedButton]} 
             onPress={() => handleGenderSelect('nonbinary')}
           >
-            <Text style={styles.buttonText}>Небинарный</Text>
+            <View style={styles.buttonContent}>
+              <Icon name="gender-non-binary" size={24} color="black" style={styles.genderIcon} />
+              <Text style={styles.buttonText}>Небинарный</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -97,7 +107,9 @@ const styles = StyleSheet.create({
     flex: 1, 
     padding: 16, 
     backgroundColor: '#ECE9E4',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    fontFamily: 'Lora',
+
   },
   contentContainer: {
     flex: 1
@@ -107,14 +119,17 @@ const styles = StyleSheet.create({
     marginBottom: 20, 
     marginTop: 20, 
     textAlign: 'center', 
-    color: 'rgba(0, 0, 0, 0.6)' 
+    color: 'rgba(0, 0, 0, 0.6)',
+    fontFamily: 'Lora',
+
   },
   additionalText: { 
     fontSize: 20, 
     marginVertical: 20, 
     textAlign: 'center', 
-    color: '#555', 
-    fontWeight: 'bold' 
+    color: 'black', 
+    fontFamily: 'Lora',
+
   },
   image: { 
     width: '100%', 
@@ -137,18 +152,30 @@ const styles = StyleSheet.create({
   buttonText: { 
     color: 'black', 
     fontSize: 16, 
-    fontWeight: 'bold', 
+    fontFamily: 'Lora',
     textAlign: 'left' 
   },
   skipButton: { 
     paddingVertical: 10,
     marginBottom: 10
+    
   },
   skipButtonText: { 
     color: 'rgba(0, 0, 0, 0.5)', 
     fontSize: 16, 
     textAlign: 'center',
+    fontFamily: 'Lora',
+
     textDecorationLine: 'underline'
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    fontFamily: 'Lora',
+  },
+  genderIcon: {
+    marginRight: 15,
+    marginLeft: 15,
   },
 });
 
