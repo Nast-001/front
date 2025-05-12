@@ -1,13 +1,26 @@
 import { Feather } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Image } from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text as CustomText } from '../components/CustomText';
-import { getLessonHistory, SavedLesson, clearLessonHistory } from '../storage/lessonHistory';
+import { clearLessonHistory, getLessonHistory, SavedLesson } from '../storage/lessonHistory';
+
+const BASE_URL = 'http://192.168.0.176:8000';
 
 const LastLesson = ({ navigation }: { navigation: any }) => {
   const [completedLessons, setCompletedLessons] = useState<SavedLesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Функция для обработки URL изображений
+  const processImageUrl = (url: string) => {
+    if (!url) return '';
+    // Если URL уже полный, возвращаем его как есть
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    // Иначе добавляем базовый URL бэкенда
+    return `${BASE_URL}${url}`;
+  };
 
   useEffect(() => {
     loadHistory();
@@ -114,7 +127,7 @@ const LastLesson = ({ navigation }: { navigation: any }) => {
               <View style={styles.cardContent}>
                 {lesson.preview_image && (
                   <Image
-                    source={{ uri: lesson.preview_image }}
+                    source={{ uri: processImageUrl(lesson.preview_image) }}
                     style={styles.previewImage}
                     resizeMode="cover"
                   />
@@ -162,6 +175,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     color: '#2d4150',
+    fontFamily: 'Lora',
   },
   content: {
     flex: 1,
@@ -183,6 +197,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+    fontFamily: 'Lora',
   },
   lessonCard: {
     backgroundColor: '#FFFFFF',
@@ -223,10 +238,12 @@ const styles = StyleSheet.create({
     color: '#2d4150',
     flex: 1,
     marginRight: 8,
+    fontFamily: 'Lora',
   },
   lessonDate: {
     fontSize: 12,
     color: '#666',
+    fontFamily: 'Lora',
   },
   lessonDetails: {
     flexDirection: 'row',
@@ -240,6 +257,7 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 14,
     color: '#666',
+    fontFamily: 'Lora',
   },
 });
 

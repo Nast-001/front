@@ -1,7 +1,14 @@
-import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
+import React, { useEffect } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+type RootStackParamList = {
+  Hello: undefined;
+  // добавьте другие экраны по необходимости
+};
+
+type NavigationType = NavigationProp<RootStackParamList>;
 
 // Configure notification handler
 Notifications.setNotificationHandler({
@@ -13,7 +20,7 @@ Notifications.setNotificationHandler({
 });
 
 const NotificationPage = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationType>();
 
   useEffect(() => {
     // Request permissions when component mounts
@@ -50,8 +57,12 @@ const NotificationPage = () => {
       } else {
         console.log('Permission not granted');
       }
+      // Перенаправляем на страницу Hello
+      navigation.navigate('Hello');
     } catch (error) {
       console.log('Error:', error);
+      // Перенаправляем даже в случае ошибки
+      navigation.navigate('Hello');
     }
   };
 
@@ -89,7 +100,7 @@ const NotificationPage = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
           style={styles.skipButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate('Hello')}
         >
           <Text style={styles.skipButtonText}>Не сейчас</Text>
         </TouchableOpacity>

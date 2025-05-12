@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp, RouteProp } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -12,7 +13,7 @@ const RegistPage = ({ navigation, route }: Props) => {
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const formData = route.params?.formData || {};
 
-  const handleGenderSelect = (gender: string) => {
+  const handleGenderSelect = async (gender: string) => {
     setSelectedGender(gender);
     
     // Преобразуем пол в формат, который ожидает API
@@ -24,6 +25,19 @@ const RegistPage = ({ navigation, route }: Props) => {
       apiGender = 'F';
     } else if (gender === 'nonbinary') {
       apiGender = 'N';
+    }
+    
+    // Сохраняем данные в AsyncStorage
+    const userData = {
+      ...formData,
+      gender: apiGender
+    };
+    
+    try {
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      console.log('Данные сохранены в AsyncStorage:', userData);
+    } catch (error) {
+      console.error('Ошибка при сохранении данных:', error);
     }
     
     // Переходим на следующий экран с сохраненными данными

@@ -4,17 +4,18 @@ export const globalStyles = StyleSheet.create({
   text: {
     fontFamily: 'Lora',
   },
-  textBold: {
-    fontFamily: 'Lora',
-    fontWeight: 'bold',
-  },
   textItalic: {
     fontFamily: 'Lora',
     fontStyle: 'italic',
   },
-  textBoldItalic: {
+  input: {
     fontFamily: 'Lora',
-    fontWeight: 'bold',
+  },
+  button: {
+    fontFamily: 'Lora',
+  },
+  buttonItalic: {
+    fontFamily: 'Lora',
     fontStyle: 'italic',
   },
 }); 

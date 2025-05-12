@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ImageBackground, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type ProfileData = {
@@ -15,7 +15,7 @@ type ProfileData = {
 };
 
 const EditProfileScreen = ({ navigation }: { navigation: any }) => {
-  const [profileData] = useState<ProfileData>({
+  const [profileData, setProfileData] = useState<ProfileData>({
     name: 'Настя',
     age: 23,
     gender: 'Женский',
@@ -26,8 +26,69 @@ const EditProfileScreen = ({ navigation }: { navigation: any }) => {
     restrictions: 'Нет ограничений',
   });
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentField, setCurrentField] = useState<string>('');
+  const [tempValue, setTempValue] = useState<string>('');
+
+  const goals = [
+    "Изучение основы йоги",
+    "Снижение стресса",
+    "Увеличение силы",
+    "Снижение веса",
+    "Улучшение гибкости"
+  ];
+
+  const focusAreas = [
+    "Всё тело", "Шея и плечи", "Руки и грудь", "Спина", "Пресс и кор", "Ягодицы и Бедра", "Ноги и голени"
+  ];
+
+  const restrictions = [
+    "Нет ограничений",
+    "Боли в спине",
+    "Проблемы с коленями",
+    "Чувствительность в суставах",
+    "Беременность",
+    "Послеродовое состояние"
+  ];
+
+  const genders = [
+    "Женский",
+    "Мужской",
+    "Другой"
+  ];
+
+  const handleFieldPress = (field: string, value: string | number) => {
+    setCurrentField(field);
+    setTempValue(value.toString());
+    setModalVisible(true);
+  };
+
+  const handleSave = () => {
+    if (currentField === 'имя') {
+      setProfileData({ ...profileData, name: tempValue });
+    } else if (currentField === 'возраст') {
+      setProfileData({ ...profileData, age: parseInt(tempValue) });
+    } else if (currentField === 'рост') {
+      setProfileData({ ...profileData, height: parseInt(tempValue) });
+    } else if (currentField === 'вес') {
+      setProfileData({ ...profileData, weight: parseInt(tempValue) });
+    } else if (currentField === 'главная цель') {
+      setProfileData({ ...profileData, mainGoal: tempValue });
+    } else if (currentField === 'область фокуса') {
+      setProfileData({ ...profileData, focusArea: tempValue });
+    } else if (currentField === 'ограничения') {
+      setProfileData({ ...profileData, restrictions: tempValue });
+    } else if (currentField === 'пол') {
+      setProfileData({ ...profileData, gender: tempValue });
+    }
+    setModalVisible(false);
+  };
+
   const renderField = (label: string, value: string | number) => (
-    <TouchableOpacity style={styles.fieldContainer}>
+    <TouchableOpacity 
+      style={styles.fieldContainer}
+      onPress={() => handleFieldPress(label, value)}
+    >
       <Text style={styles.fieldLabel}>{label}</Text>
       <View style={styles.fieldValueContainer}>
         <Text style={styles.fieldValue}>{value}</Text>
@@ -35,6 +96,80 @@ const EditProfileScreen = ({ navigation }: { navigation: any }) => {
       </View>
     </TouchableOpacity>
   );
+
+  const renderModal = () => {
+    let options: string[] = [];
+    let isTextInput = false;
+
+    switch (currentField) {
+      case 'имя':
+        isTextInput = true;
+        break;
+      case 'возраст':
+      case 'рост':
+      case 'вес':
+        isTextInput = true;
+        break;
+      case 'главная цель':
+        options = goals;
+        break;
+      case 'область фокуса':
+        options = focusAreas;
+        break;
+      case 'ограничения':
+        options = restrictions;
+        break;
+      case 'пол':
+        options = genders;
+        break;
+    }
+
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{currentField}</Text>
+            
+            {isTextInput ? (
+              <TextInput
+                style={styles.input}
+                value={tempValue}
+                onChangeText={setTempValue}
+                keyboardType={currentField === 'имя' ? 'default' : 'numeric'}
+                placeholder={`Введите ${currentField}`}
+              />
+            ) : (
+              <ScrollView style={styles.optionsContainer}>
+                {options.map((option, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.optionItem}
+                    onPress={() => {
+                      setTempValue(option);
+                      handleSave();
+                    }}
+                  >
+                    <Text style={styles.optionText}>{option}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
+
+            {isTextInput && (
+              <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                <Text style={styles.saveButtonText}>Сохранить</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </Modal>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -60,15 +195,16 @@ const EditProfileScreen = ({ navigation }: { navigation: any }) => {
       </View>
 
       <View style={styles.content}>
-        {renderField('Имя', profileData.name)}
-        {renderField('Возраст', profileData.age)}
-        {renderField('Пол', profileData.gender)}
-        {renderField('Рост', profileData.height)}
-        {renderField('Вес', profileData.weight)}
-        {renderField('Главная цель', profileData.mainGoal)}
-        {renderField('Область фокуса', profileData.focusArea)}
-        {renderField('Ограничения', profileData.restrictions)}
+        {renderField('имя', profileData.name)}
+        {renderField('возраст', profileData.age)}
+        {renderField('пол', profileData.gender)}
+        {renderField('рост', profileData.height)}
+        {renderField('вес', profileData.weight)}
+        {renderField('главная цель', profileData.mainGoal)}
+        {renderField('область фокуса', profileData.focusArea)}
+        {renderField('ограничения', profileData.restrictions)}
       </View>
+      {renderModal()}
     </SafeAreaView>
   );
 };
@@ -78,6 +214,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     flex: 1,
     backgroundColor: '#ECE9E4',
+    fontFamily: 'Lora',
   },
   headerBackground: {
     marginTop: -30,
@@ -96,7 +233,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 100,
     height: 100,
-    borderRadius:20,
+    borderRadius: 20,
     borderWidth: 3,
     borderColor: '#fff',
   },
@@ -107,11 +244,12 @@ const styles = StyleSheet.create({
     color: '#2d4150',
     fontSize: 14,
     textDecorationLine: 'underline',
+    fontFamily: 'Lora',
   },
   content: {
     backgroundColor: '#ECE9E4',
     margin: 3,
-    flex: 1,  
+    flex: 1,
     padding: 16,
     borderRadius: 10,
   },
@@ -128,6 +266,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 16,
     color: '#2d4150',
+    fontFamily: 'Lora',
   },
   fieldValueContainer: {
     flexDirection: 'row',
@@ -137,6 +276,57 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#2d4150',
     marginRight: 8,
+    fontFamily: 'Lora',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    width: '80%',
+    maxHeight: '80%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontFamily: 'Lora',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 20,
+    fontFamily: 'Lora',
+  },
+  optionsContainer: {
+    maxHeight: 300,
+  },
+  optionItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  optionText: {
+    fontSize: 16,
+    fontFamily: 'Lora',
+  },
+  saveButton: {
+    backgroundColor: '#519076',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Lora',
   },
 });
 

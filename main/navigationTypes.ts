@@ -30,4 +30,6 @@ export type RootStackParamList = {
   NewsDetail: { newsId: number };
   NewsScreen: undefined;
   FavoriteLessonsScreen: undefined;
+  WorkoutDetails: { workoutId: string };
+  CustomWorkoutDetails: { workoutId: string };
 }; 

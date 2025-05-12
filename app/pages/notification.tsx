@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { globalStyles } from '../../src/styles/globalStyles';
 import NotificationService from '../services/NotificationService';
 
 const NotificationPage = () => {
@@ -79,7 +80,7 @@ const NotificationPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    ...globalStyles.text,
   },
   content: {
     flex: 1,

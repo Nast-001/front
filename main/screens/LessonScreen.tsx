@@ -280,6 +280,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     color: '#666',
+    fontFamily: 'Lora',
   },
   errorContainer: {
     alignItems: 'center',
@@ -289,6 +290,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: '#ff6b6b',
     textAlign: 'center',
+    fontFamily: 'Lora',
   },
   contentContainer: {
     padding: 20,
@@ -298,6 +300,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 10,
+    fontFamily: 'Lora',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -313,11 +316,13 @@ const styles = StyleSheet.create({
   statText: {
     color: '#666',
     fontSize: 16,
+    fontFamily: 'Lora',
   },
   description: {
     fontSize: 16,
     lineHeight: 24,
     color: '#444',
+    fontFamily: 'Lora',
   },
 });
 

@@ -45,4 +45,14 @@ export const isLessonFavorite = async (lessonId: string): Promise<boolean> => {
     console.error('Error checking if lesson is favorite:', error);
     return false;
   }
+};
+
+export const clearFavoriteLessons = async (): Promise<void> => {
+  try {
+    await AsyncStorage.removeItem(FAVORITE_LESSONS_KEY);
+    console.log('Favorite lessons cleared successfully');
+  } catch (error) {
+    console.error('Error clearing favorite lessons:', error);
+    throw error;
+  }
 }; 

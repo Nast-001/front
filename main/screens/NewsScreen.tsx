@@ -20,6 +20,17 @@ const NewsScreen = () => {
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation<NativeStackNavigationProp<MainTabParamList>>();
 
+  // Функция для обработки URL изображений
+  const processImageUrl = (url: string) => {
+    if (!url) return '';
+    // Если URL уже полный, возвращаем его как есть
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    // Иначе добавляем базовый URL бэкенда
+    return `http://192.168.0.176:8000${url}`;
+  };
+
   useEffect(() => {
     const fetchNews = async () => {
       try {
@@ -40,7 +51,7 @@ const NewsScreen = () => {
   }, []);
 
   const renderNewsItem = ({ item }: { item: NewsItem }) => {
-    const imageUrl = item.preview_image;
+    const imageUrl = processImageUrl(item.preview_image);
     console.log('URL изображения:', imageUrl);
 
     return (
@@ -119,10 +130,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     position: 'relative',
+    width: '100%',
   },
   newsImage: {
     width: '100%',
-    height: 200,
+    height: 250,
     borderRadius: 12,
   },
   overlay: {
@@ -131,6 +143,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   tagContainer: {
     flexDirection: 'row',
@@ -148,7 +161,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: '500',
-    fontFamily: 'Lora-Regular',
+    fontFamily: 'Lora',
   },
   newsTitle: {
     fontSize: 15,
@@ -157,7 +170,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.8)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
-    fontFamily: 'Lora-Regular',
+    fontFamily: 'Lora',
   },
   errorText: {
     color: 'red',

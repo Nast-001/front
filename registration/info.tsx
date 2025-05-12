@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -51,16 +52,34 @@ const InfoScreen = () => {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (name && age && height && weight) {
-      navigation.navigate('Time', {
-        ...formData,
-        gender,
-        name,
-        age,
-        height,
-        weight
-      });
+      try {
+        // Получаем данные авторизации
+        const authDataStr = await AsyncStorage.getItem('authData');
+        const authData = authDataStr ? JSON.parse(authDataStr) : {};
+        
+        // Создаем полный объект данных
+        const userData = {
+          ...authData, // Сначала берем данные авторизации (email, password)
+          ...formData, // Затем данные из route.params
+          gender,      // Пол из route.params
+          name,        // Имя из локального состояния
+          age: Number(age),
+          height: Number(height),
+          weight: Number(weight)
+        };
+        
+        // Сохраняем объединенные данные
+        await AsyncStorage.setItem('userData', JSON.stringify(userData));
+        console.log('Объединенные данные сохранены:', userData);
+        
+        // Переходим на следующий экран
+        navigation.navigate('Time', userData);
+      } catch (error) {
+        console.error('Ошибка при сохранении данных:', error);
+        Alert.alert('Ошибка', 'Не удалось сохранить данные. Попробуйте еще раз.');
+      }
     }
   };
 

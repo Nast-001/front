@@ -179,6 +179,7 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
     textAlign: 'center',
+    fontFamily: 'Lora',
   },
   descriptionContainer: {
     padding: 16,
@@ -189,6 +190,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: '#666666',
     textAlign: 'center',
+    fontFamily: 'Lora',
   },
   listContainer: {
     padding: 16,
@@ -229,6 +231,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#333333',
     lineHeight: 22,
+    fontFamily: 'Lora',
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',

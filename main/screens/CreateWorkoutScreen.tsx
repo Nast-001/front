@@ -1,8 +1,12 @@
 import { Feather } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
+import { RootStackParamList } from '../navigationTypes';
 
 type WorkoutVideo = {
   id: string;
@@ -10,7 +14,7 @@ type WorkoutVideo = {
   description: string;
   duration: number;
   calories: number;
-  thumbnailUrl: string;
+  thumbnailUrl: any;
   videoUrl: string;
 };
 
@@ -25,52 +29,71 @@ type WorkoutSettings = {
 const SAMPLE_VIDEOS: WorkoutVideo[] = [
   {
     id: '1',
-    title: 'Разминка всего тела',
+    title: 'Дханурасана - поза лука',
     description: 'Комплексная разминка для подготовки к тренировке',
-    duration: 300,
-    calories: 50,
-    thumbnailUrl: 'https://via.placeholder.com/150',
+    duration: 40,
+    calories: 90,
+    thumbnailUrl: require('../../assets/djax.png'),
     videoUrl: 'https://example.com/video1',
   },
   {
     id: '2',
-    title: 'Силовая тренировка',
+    title: 'Чатуш падасана - поза на четырех опорах',
     description: 'Упражнения для развития силы мышц',
-    duration: 600,
-    calories: 150,
-    thumbnailUrl: 'https://via.placeholder.com/150',
+    duration: 20,
+    calories: 40,
+    thumbnailUrl: require('../../assets/chatur.png'),
     videoUrl: 'https://example.com/video2',
   },
   {
     id: '3',
-    title: 'Кардио интервалы',
-    description: 'Интенсивная кардио тренировка',
-    duration: 450,
-    calories: 200,
-    thumbnailUrl: 'https://via.placeholder.com/150',
+    title: 'Пурвоттанасана - поза вытяжения восточной стороны тела',
+    description: 'Пурвоттанасана - поза вытяжения восточной стороны тела',
+    duration: 20,
+    calories: 40,
+    thumbnailUrl: require('../../assets/purvo.png'),
     videoUrl: 'https://example.com/video3',
   },
   {
     id: '4',
-    title: 'Растяжка',
-    description: 'Комплекс упражнений для растяжки',
-    duration: 400,
-    calories: 80,
-    thumbnailUrl: 'https://via.placeholder.com/150',
+    title: 'Чатуранга - поза Посоха',
+    description: 'Чатуранга - поза Посоха',
+    duration: 60,
+    calories: 150,
+    thumbnailUrl: require('../../assets/chatur.png'),
     videoUrl: 'https://example.com/video4',
   },
   {
     id: '5',
-    title: 'Йога для начинающих',
+    title: 'Кумбхакасана - поза доски',
     description: 'Базовые асаны и дыхательные упражнения',
-    duration: 500,
+    duration: 50,
     calories: 100,
-    thumbnailUrl: 'https://via.placeholder.com/150',
+    thumbnailUrl: require('../../assets/kumbx.png'),
     videoUrl: 'https://example.com/video5',
+  },
+  {
+    id: '6',
+    title: 'Ашва Санчаланасана',
+    description: 'Комплекс упражнений для растяжки',
+    duration: 45,
+    calories: 120,
+    thumbnailUrl: require('../../assets/ashva.png'),
+    videoUrl: 'https://example.com/video6',
+  },
+  {
+    id: '7',
+    title: 'Ардха матсиендрасана',
+    description: 'Комплекс упражнений для растяжки',
+    duration: 30,
+    calories: 85,
+    thumbnailUrl: require('../../assets/ardxa.png'),
+    videoUrl: 'https://example.com/video7',
   },
 ];
 
 const CreateWorkoutScreen = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [step, setStep] = useState(0);
   const [selectedVideos, setSelectedVideos] = useState<WorkoutVideo[]>([]);
   const [settings, setSettings] = useState<WorkoutSettings>({
@@ -81,6 +104,32 @@ const CreateWorkoutScreen = () => {
     sets: 1,
   });
   const [savedWorkouts, setSavedWorkouts] = useState<Array<{ name: string; videos: WorkoutVideo[]; settings: WorkoutSettings }>>([]);
+
+  // Загрузка сохраненных тренировок при запуске
+  useEffect(() => {
+    loadSavedWorkouts();
+  }, []);
+
+  // Загрузка тренировок из AsyncStorage
+  const loadSavedWorkouts = async () => {
+    try {
+      const savedWorkoutsJson = await AsyncStorage.getItem('savedWorkouts');
+      if (savedWorkoutsJson) {
+        setSavedWorkouts(JSON.parse(savedWorkoutsJson));
+      }
+    } catch (error) {
+      console.error('Error loading saved workouts:', error);
+    }
+  };
+
+  // Сохранение тренировок в AsyncStorage
+  const saveWorkoutsToStorage = async (workouts: Array<{ name: string; videos: WorkoutVideo[]; settings: WorkoutSettings }>) => {
+    try {
+      await AsyncStorage.setItem('savedWorkouts', JSON.stringify(workouts));
+    } catch (error) {
+      console.error('Error saving workouts:', error);
+    }
+  };
 
   const handleVideoSelect = (video: WorkoutVideo) => {
     if (selectedVideos.find(v => v.id === video.id)) {
@@ -115,12 +164,24 @@ const CreateWorkoutScreen = () => {
         <View style={styles.workoutsContainer}>
           <ScrollView style={styles.savedWorkoutsList}>
             {savedWorkouts.map((workout, index) => (
-              <View key={index} style={styles.savedWorkout}>
-                <Text style={styles.savedWorkoutTitle}>{workout.name}</Text>
-                <Text style={styles.savedWorkoutDetails}>
-                  {workout.videos.length} упражнений • {Math.floor(calculateTotalTime() / 60)} мин
-                </Text>
-              </View>
+              <TouchableOpacity 
+                key={index} 
+                style={styles.savedWorkout}
+                onPress={() => navigation.navigate('CustomWorkoutDetails', { 
+                  workoutId: `custom-${index}`
+                })}
+              >
+                <Image 
+                  source={workout.videos[0]?.thumbnailUrl} 
+                  style={styles.savedWorkoutPreview}
+                />
+                <View style={styles.savedWorkoutInfo}>
+                  <Text style={styles.savedWorkoutTitle}>{workout.name}</Text>
+                  <Text style={styles.savedWorkoutDetails}>
+                    {workout.videos.length} упражнений • {Math.floor(calculateTotalTime() / 60)} мин
+                  </Text>
+                </View>
+              </TouchableOpacity>
             ))}
           </ScrollView>
           <TouchableOpacity 
@@ -147,10 +208,11 @@ const CreateWorkoutScreen = () => {
             ]}
             onPress={() => handleVideoSelect(video)}
           >
-            <Image source={{ uri: video.thumbnailUrl }} style={styles.thumbnail} />
+            <Image source={video.thumbnailUrl} style={styles.thumbnail} />
             <View style={styles.videoInfo}>
               <Text style={styles.videoTitle}>{video.title}</Text>
-              <Text style={styles.videoDuration}>{Math.floor(video.duration / 60)} мин</Text>
+              <Text style={styles.videoDuration}>{Math.floor(video.duration)} мин</Text>
+              <Text style={styles.videoCalories}>{video.calories} ккал</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -185,7 +247,7 @@ const CreateWorkoutScreen = () => {
               >
                 <Feather name="minus-circle" size={24} color="#ff4444" />
               </TouchableOpacity>
-              <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbnail} />
+              <Image source={item.thumbnailUrl} style={styles.thumbnail} />
               <View style={styles.videoInfo}>
                 <Text style={styles.videoTitle}>{item.title}</Text>
               </View>
@@ -288,18 +350,12 @@ const CreateWorkoutScreen = () => {
 
       <TouchableOpacity
         style={[styles.continueButton, !settings.name && styles.continueButtonDisabled]}
-        onPress={() => {
+        onPress={async () => {
           if (settings.name) {
-            setSavedWorkouts([...savedWorkouts, { name: settings.name, videos: selectedVideos, settings }]);
+            const newSavedWorkouts = [...savedWorkouts, { name: settings.name, videos: selectedVideos, settings }];
+            setSavedWorkouts(newSavedWorkouts);
+            await saveWorkoutsToStorage(newSavedWorkouts);
             setStep(0);
-            setSelectedVideos([]);
-            setSettings({
-              name: '',
-              restTime: 30,
-              poseTime: 40,
-              setRestTime: 60,
-              sets: 1,
-            });
           }
         }}
         disabled={!settings.name}
@@ -348,6 +404,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#666',
     marginTop: 8,
+    fontFamily: 'Lora',
   },
   stepIndicator: {
     fontSize: 18,
@@ -355,6 +412,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 16,
     color: '#2d4150',
+    fontFamily: 'Lora',
   },
   videoCard: {
     flexDirection: 'row',
@@ -397,16 +455,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#2d4150',
+    fontFamily: 'Lora',
   },
   videoDescription: {
     fontSize: 14,
     color: '#666',
     marginTop: 4,
+    fontFamily: 'Lora',
   },
   videoDuration: {
     fontSize: 12,
     color: '#999',
     marginTop: 4,
+    fontFamily: 'Lora',
+  },
+  videoCalories: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 4,
+    fontFamily: 'Lora',
   },
   continueButton: {
     backgroundColor: '#00adf5',
@@ -422,6 +489,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'Lora',
   },
   removeButton: {
     padding: 8,
@@ -442,7 +510,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#2d4150',
     flex: 1,
-    
+    fontFamily: 'Lora',
   },
   input: {
     flex: 1,
@@ -452,6 +520,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
+    fontFamily: 'Lora',
   },
   picker: {
     flex: 1,
@@ -475,11 +544,13 @@ const styles = StyleSheet.create({
   summaryLabel: {
     fontSize: 16,
     color: '#2d4150',
+    fontFamily: 'Lora',
   },
   summaryValue: {
     fontSize: 16,
     color: '#519076',
     fontWeight: 'bold',
+    fontFamily: 'Lora',
   },
   workoutsContainer: {
     flex: 1,
@@ -508,23 +579,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 8,
+    fontFamily: 'Lora',
   },
   savedWorkout: {
+    flexDirection: 'row',
     width: '100%',
-    padding: 16,
     backgroundColor: '#f8f9fa',
     borderRadius: 8,
     marginTop: 16,
+    overflow: 'hidden',
+  },
+  savedWorkoutPreview: {
+    width: 100,
+    height: 70,
+  },
+  savedWorkoutInfo: {
+    flex: 1,
+    padding: 12,
   },
   savedWorkoutTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#2d4150',
     marginBottom: 8,
+    fontFamily: 'Lora',
   },
   savedWorkoutDetails: {
     fontSize: 14,
     color: '#666',
+    fontFamily: 'Lora',
   },
   dragHandle: {
     padding: 8,

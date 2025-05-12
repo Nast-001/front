@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
 type HelloScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Hello'>;
@@ -56,9 +56,12 @@ const HelloScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        {isLogin ? 'Вход' : 'Регистрация'}
-      </Text>
+      <Image 
+        source={require('../assets/load.png')} 
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      
 
       <TextInput
         style={styles.input}
@@ -88,11 +91,11 @@ const HelloScreen = () => {
       )}
 
       <TouchableOpacity 
-        style={[styles.button, loading && styles.buttonDisabled]} 
+        style={[styles.button, loading && styles.buttonDisabled, isLogin ? styles.greenButton : styles.whiteButton]} 
         onPress={handleSubmit}
         disabled={loading}
       >
-        <Text style={styles.buttonText}>
+        <Text style={[styles.buttonText, !isLogin && styles.greenText]}>
           {loading 
             ? 'Загрузка...' 
             : isLogin 
@@ -103,13 +106,11 @@ const HelloScreen = () => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.switchButton}
+        style={[styles.switchButton, isLogin ? styles.whiteButton : styles.greenButton]}
         onPress={() => setIsLogin(!isLogin)}
       >
-        <Text style={styles.switchButtonText}>
-          {isLogin
-            ? 'Нет аккаунта? Зарегистрироваться'
-            : 'Уже есть аккаунт? Войти'}
+        <Text style={[styles.buttonText, isLogin && styles.greenText]}>
+          {isLogin ? 'Зарегистрироваться' : 'Войти'}
         </Text>
       </TouchableOpacity>
     </View>
@@ -120,12 +121,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+    justifyContent: 'flex-start',
+    backgroundColor: '#ECE9E4',
+  },
+  logo: {
+    width: '100%',
+    height: 250,
+    marginBottom: 40,
+  },
+  loadImage: {
+    width: '100%',
+    height: 250,
+    marginBottom: 40,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: 'Lora',
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -135,28 +146,44 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     marginBottom: 15,
+    backgroundColor: '#FFFFFF',
+    fontFamily: 'Lora',
   },
   button: {
-    backgroundColor: '#007AFF',
     padding: 15,
     borderRadius: 8,
     marginTop: 10,
+    width: '100%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonDisabled: {
     backgroundColor: '#ccc',
   },
   buttonText: {
-    color: '#fff',
     textAlign: 'center',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Lora',
+    color: '#FFFFFF',
+  },
+  greenText: {
+    color: '#87D0B2',
+  },
+  greenButton: {
+    backgroundColor: '#87D0B2',
+  },
+  whiteButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#87D0B2',
   },
   switchButton: {
     marginTop: 20,
-  },
-  switchButtonText: {
-    color: '#007AFF',
-    textAlign: 'center',
+    width: '100%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

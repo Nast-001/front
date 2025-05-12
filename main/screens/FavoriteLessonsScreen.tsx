@@ -2,8 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getFavoriteLessons } from '../storage/favoriteLessons';
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { clearFavoriteLessons, getFavoriteLessons } from '../storage/favoriteLessons';
 import { Lesson } from '../types';
 
 type RootStackParamList = {
@@ -23,6 +23,32 @@ const FavoriteLessonsScreen = () => {
     };
     loadFavorites();
   }, []);
+
+  const handleClearFavorites = async () => {
+    Alert.alert(
+      'Очистить избранное',
+      'Вы уверены, что хотите удалить все избранные уроки?',
+      [
+        {
+          text: 'Отмена',
+          style: 'cancel',
+        },
+        {
+          text: 'Очистить',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await clearFavoriteLessons();
+              setFavoriteLessons([]);
+            } catch (error) {
+              console.error('Error clearing favorites:', error);
+              Alert.alert('Ошибка', 'Не удалось очистить избранное');
+            }
+          },
+        },
+      ],
+    );
+  };
 
   const renderLessonItem = ({ item }: { item: Lesson }) => (
     <TouchableOpacity
@@ -47,6 +73,14 @@ const FavoriteLessonsScreen = () => {
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Избранные уроки</Text>
+        {favoriteLessons.length > 0 && (
+          <TouchableOpacity
+            style={styles.clearButton}
+            onPress={handleClearFavorites}
+          >
+            <Ionicons name="trash-outline" size={24} color="#333" />
+          </TouchableOpacity>
+        )}
       </View>
 
       {favoriteLessons.length === 0 ? (
@@ -85,7 +119,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: 'Lora',
     color: '#333',
   },
   listContainer: {
@@ -105,12 +139,13 @@ const styles = StyleSheet.create({
   },
   lessonTitle: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'Lora',
     color: '#333',
     marginBottom: 4,
   },
   lessonDuration: {
     fontSize: 14,
+    fontFamily: 'Lora',
     color: '#666',
   },
   emptyContainer: {
@@ -122,8 +157,13 @@ const styles = StyleSheet.create({
   emptyText: {
     marginTop: 16,
     fontSize: 16,
+    fontFamily: 'Lora',
     color: '#666',
     textAlign: 'center',
+  },
+  clearButton: {
+    marginLeft: 'auto',
+    padding: 8,
   },
 });
 

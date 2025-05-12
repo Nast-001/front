@@ -358,6 +358,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#333',
+    fontFamily: 'Lora',
   },
   currentWorkoutCard: {
     height: 200,
@@ -392,6 +393,7 @@ const styles = StyleSheet.create({
   dayText: {
     color: '#333',
     fontWeight: '600',
+    fontFamily: 'Lora',
   },
   workoutTitle: {
     color: '#FFFFFF',
@@ -400,6 +402,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
+    fontFamily: 'Lora',
   },
   workoutInfoContainer: {
     flexDirection: 'row',
@@ -416,6 +419,7 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '600',
     fontSize: 12,
+    fontFamily: 'Lora',
   },
   playButton: {
     position: 'absolute',
@@ -443,12 +447,14 @@ const styles = StyleSheet.create({
     left: 16,
     color: '#ffffff',
     fontSize: 30,
+    fontFamily: 'Lora',
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
     marginBottom: 16,
     color: '#333',
+    fontFamily: 'Lora',
   },
   listContainer: {
     paddingBottom: 16,
@@ -481,6 +487,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
+    fontFamily: 'Lora',
   },
 });
 

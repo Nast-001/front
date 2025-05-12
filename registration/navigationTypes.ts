@@ -176,11 +176,12 @@ export type RootStackParamList = {
   Profile: undefined;
   EditProfile: undefined;
   Settings: undefined;
-  Achievements: {
-    date: string;
-  };
+  LastLesson: undefined;
+  Achievements: { date: string };
   CreateWorkout: undefined;
-  WorkoutDetails: {
-    workoutId: string;
-  };
+  WorkoutDetails: { workoutId: string };
+  CustomWorkoutDetails: { workoutId: string };
+  NewsDetail: { newsId: number };
+  NewsScreen: undefined;
+  FavoriteLessonsScreen: undefined;
 };

@@ -2,7 +2,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { register, saveUserData } from './api/auth';
+import { saveUserData } from './api/auth';
 import { RootStackParamList } from './navigationTypes';
 
 type TimeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Time'>;
@@ -30,17 +30,16 @@ const TimeScreen = () => {
 
   const handleContinue = async () => {
     if (selectedTime) {
-      let userData;
       try {
         setLoading(true);
         
-        // Подготавливаем данные для отправки на сервер
+        // Подготавливаем данные для сохранения локально
         if (!name) {
           Alert.alert('Ошибка', 'Имя пользователя обязательно');
           return;
         }
 
-        userData = {
+        const userData = {
           email: formData.email,
           password: formData.password,
           password2: formData.password2,
@@ -56,10 +55,7 @@ const TimeScreen = () => {
         // Сохраняем данные пользователя локально
         await saveUserData(userData);
         
-        // Отправляем данные на сервер
-        const response = await register(userData);
-        
-        // Если регистрация успешна, переходим на следующий экран
+        // Переходим на следующий экран без отправки данных на сервер
         navigation.navigate('GoalFormation', {
           ...formData,
           gender,
@@ -70,25 +66,8 @@ const TimeScreen = () => {
           workout_duration: selectedTime
         });
       } catch (error: any) {
-        console.error('Ошибка регистрации:', error);
-        console.error('Данные запроса:', userData || 'Данные не были сформированы');
-        
-        let errorMessage = 'Произошла ошибка при регистрации. Пожалуйста, попробуйте еще раз.';
-        
-        if (error.response) {
-          // Сервер ответил с ошибкой
-          console.error('Ответ сервера:', error.response.data);
-          errorMessage = error.response.data.message || errorMessage;
-        } else if (error.request) {
-          // Запрос был сделан, но ответа не получено
-          console.error('Нет ответа от сервера:', error.request);
-          errorMessage = 'Не удалось подключиться к серверу. Проверьте подключение к интернету.';
-        } else {
-          // Что-то пошло не так при настройке запроса
-          console.error('Ошибка запроса:', error.message);
-        }
-        
-        Alert.alert('Ошибка регистрации', errorMessage);
+        console.error('Ошибка при сохранении данных:', error);
+        Alert.alert('Ошибка', 'Произошла ошибка при сохранении данных. Пожалуйста, попробуйте еще раз.');
       } finally {
         setLoading(false);
       }

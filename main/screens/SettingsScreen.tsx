@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'Lora',
     color: '#2d4150',
   },
   content: {
@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
   },
   settingText: {
     fontSize: 16,
+    fontFamily: 'Lora',
     color: '#2d4150',
     marginLeft: 12,
   },
@@ -195,12 +196,13 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'Lora',
     color: '#2d4150',
     marginBottom: 8,
   },
   modalText: {
     fontSize: 14,
+    fontFamily: 'Lora',
     color: '#7f8c8d',
     textAlign: 'center',
     marginBottom: 24,
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: '#2d4150',
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'Lora',
   },
   confirmDeleteButton: {
     backgroundColor: '#ff3b30',
@@ -231,7 +233,7 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'Lora',
   },
 });
 

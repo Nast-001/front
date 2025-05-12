@@ -10,6 +10,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import MainTabNavigator from './main/navigation/MainTabNavigator';
 import AchievementsScreen from './main/screens/AchievementsScreen';
 import CreateWorkoutScreen from './main/screens/CreateWorkoutScreen';
+import CustomWorkoutDetailsScreen from './main/screens/CustomWorkoutDetailsScreen';
 import EditProfileScreen from './main/screens/EditProfileScreen';
 import FavoriteLessonsScreen from './main/screens/FavoriteLessonsScreen';
 import LastLesson from './main/screens/LastLesson';
@@ -83,6 +84,7 @@ const AppNavigator = () => {
               }}
             >
               <Stack.Screen name="Hello" component={HelloScreen} />
+              <Stack.Screen name="Reg" component={RegistPage} />
               <Stack.Screen name="Regist" component={RegistPage} />
               <Stack.Screen name="Info" component={InfoScreen} />
               <Stack.Screen name="Time" component={TimeScreen} />
@@ -105,6 +107,7 @@ const AppNavigator = () => {
               <Stack.Screen name="Achievements" component={AchievementsScreen} />
               <Stack.Screen name="CreateWorkout" component={CreateWorkoutScreen} />
               <Stack.Screen name="WorkoutDetails" component={WorkoutDetailsScreen} />
+              <Stack.Screen name="CustomWorkoutDetails" component={CustomWorkoutDetailsScreen} />
               <Stack.Screen name="NewsDetail" component={NewsDetailScreen} />
               <Stack.Screen name="NewsScreen" component={NewsScreen} />
               <Stack.Screen 

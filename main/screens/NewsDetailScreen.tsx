@@ -27,6 +27,17 @@ const NewsDetailScreen = () => {
   const [newsDetail, setNewsDetail] = useState<NewsDetail | null>(null);
   const [imageError, setImageError] = useState(false);
 
+  // Функция для обработки URL изображений
+  const processImageUrl = (url: string) => {
+    if (!url) return '';
+    // Если URL уже полный, возвращаем его как есть
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    // Иначе добавляем базовый URL бэкенда
+    return `http://192.168.0.176:8000${url}`;
+  };
+
   useEffect(() => {
     fetch(`http://192.168.0.176:8000/api/news/${route.params.newsId}/`)
       .then(response => response.json())
@@ -42,7 +53,8 @@ const NewsDetailScreen = () => {
     );
   }
 
-  const imageUrl = newsDetail.preview_image;
+  const imageUrl = processImageUrl(newsDetail.preview_image);
+  console.log('URL изображения деталей:', imageUrl);
 
   return (
     <ScrollView style={styles.container}>
@@ -56,8 +68,9 @@ const NewsDetailScreen = () => {
         <Image 
           source={{ uri: imageUrl }}
           style={styles.newsImage}
-          onError={() => {
-            console.error('Error loading news detail image:', imageUrl);
+          onError={(e) => {
+            console.error('Ошибка загрузки изображения:', e.nativeEvent.error);
+            console.error('URL изображения:', imageUrl);
             setImageError(true);
           }}
         />
@@ -130,7 +143,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: '500',
-    fontFamily: 'Lora-Regular',
+    fontFamily: 'Lora',
   },
   title: {
     fontSize: 15,
@@ -139,7 +152,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
-    fontFamily: 'Lora-Regular',
+    fontFamily: 'Lora',
   },
   content: {
     padding: 20,
@@ -150,13 +163,13 @@ const styles = StyleSheet.create({
     color: '#333',
     marginTop: 24,
     marginBottom: 12,
-    fontFamily: 'Lora-Regular',
+    fontFamily: 'Lora',
   },
   contentText: {
     fontSize: 12,
     lineHeight: 20,
     color: '#666',
-    fontFamily: 'Lora-Regular',
+    fontFamily: 'Lora',
   },
 });
 
