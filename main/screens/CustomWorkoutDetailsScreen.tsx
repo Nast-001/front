@@ -4,12 +4,12 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ResizeMode, Video } from 'expo-av';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ImageBackground,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    ImageBackground,
+    Modal,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { RootStackParamList } from '../navigationTypes';
 
@@ -32,10 +32,13 @@ type Props = NativeStackScreenProps<RootStackParamList, 'CustomWorkoutDetails'>;
 
 const CustomWorkoutDetailsScreen = ({ route, navigation }: Props) => {
   const { workoutId } = route.params;
-  const [activeExerciseIndex, setActiveExerciseIndex] = useState<number | null>(null);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [workout, setWorkout] = useState<Workout | null>(null);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
   const videoRef = useRef<Video>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
     const loadWorkout = async () => {
@@ -69,19 +72,50 @@ const CustomWorkoutDetailsScreen = ({ route, navigation }: Props) => {
     loadWorkout();
   }, [workoutId]);
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const handleExercisePress = (index: number) => {
-    if (activeExerciseIndex === index) {
-      setActiveExerciseIndex(null);
-      setIsPlaying(false);
-    } else {
-      setActiveExerciseIndex(index);
-      setIsPlaying(true);
+  const startExercise = () => {
+    setIsPlaying(true);
+    setVideoLoaded(false);
+  };
+
+  const stopExercise = () => {
+    setIsPlaying(false);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  };
+
+  const handlePlaybackStatusUpdate = (status: any) => {
+    if (status.isLoaded && status.isPlaying && !videoLoaded) {
+      setVideoLoaded(true);
+      
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      timerRef.current = setTimeout(() => {
+        if (workout && currentExerciseIndex < workout.exercises.length - 1) {
+          setCurrentExerciseIndex(currentExerciseIndex + 1);
+          setIsPlaying(false);
+          setVideoLoaded(false);
+        } else {
+          setShowCompletionModal(true);
+          setIsPlaying(false);
+        }
+      }, 10000); // 10 секунд
     }
   };
 
@@ -92,6 +126,8 @@ const CustomWorkoutDetailsScreen = ({ route, navigation }: Props) => {
       </View>
     );
   }
+
+  const currentExercise = workout.exercises[currentExerciseIndex];
 
   return (
     <View style={styles.container}>
@@ -121,38 +157,57 @@ const CustomWorkoutDetailsScreen = ({ route, navigation }: Props) => {
         </View>
       </ImageBackground>
 
-      <ScrollView style={styles.content}>
-        <Text style={styles.sectionTitle}>Упражнения</Text>
-        {workout.exercises.map((exercise: Exercise, index: number) => (
-          <View key={index}>
-            <TouchableOpacity
-              style={[
-                styles.exerciseItem,
-                activeExerciseIndex === index && styles.activeExerciseItem
-              ]}
-              onPress={() => handleExercisePress(index)}
-            >
-              <View style={styles.exerciseInfo}>
-                <Text style={styles.exerciseName}>{exercise.name}</Text>
-                <Text style={styles.exerciseTime}>
-                  {formatTime(exercise.duration)}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            {activeExerciseIndex === index && exercise.videoUrl && (
-              <Video
-                ref={videoRef}
-                style={styles.video}
-                source={{ uri: exercise.videoUrl }}
-                useNativeControls
-                resizeMode={ResizeMode.CONTAIN}
-                isLooping
-                shouldPlay={isPlaying}
-              />
-            )}
+      <View style={styles.content}>
+        <Text style={styles.sectionTitle}>Упражнение {currentExerciseIndex + 1} из {workout.exercises.length}</Text>
+        
+        <TouchableOpacity
+          style={styles.exerciseItem}
+          onPress={() => isPlaying ? stopExercise() : startExercise()}
+        >
+          <View style={styles.exerciseInfo}>
+            <Text style={styles.exerciseName}>{currentExercise.name}</Text>
+            <Text style={styles.exerciseTime}>
+              {formatTime(currentExercise.duration)}
+            </Text>
           </View>
-        ))}
-      </ScrollView>
+        </TouchableOpacity>
+
+        {currentExercise.videoUrl && (
+          <Video
+            key={currentExerciseIndex}
+            ref={videoRef}
+            style={styles.video}
+            source={{ uri: currentExercise.videoUrl }}
+            useNativeControls
+            resizeMode={ResizeMode.CONTAIN}
+            isLooping
+            shouldPlay={isPlaying}
+            onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+          />
+        )}
+      </View>
+
+      <Modal
+        visible={showCompletionModal}
+        transparent={true}
+        animationType="fade"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Тренировка завершена!</Text>
+            <Text style={styles.modalText}>Вы успешно выполнили все упражнения.</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setShowCompletionModal(false);
+                navigation.goBack();
+              }}
+            >
+              <Text style={styles.modalButtonText}>Закрыть</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -202,14 +257,17 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+    alignItems: 'center',
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#2d4150',
     fontFamily: 'Lora',
   },
   exerciseItem: {
+    width: '100%',
     padding: 20,
     backgroundColor: '#ffffff',
     borderRadius: 15,
@@ -222,11 +280,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
-  },
-  activeExerciseItem: {
-    backgroundColor: '#e8f5e9',
-    borderWidth: 1,
-    borderColor: '#4CAF50',
   },
   exerciseInfo: {
     flexDirection: 'row',
@@ -252,6 +305,46 @@ const styles = StyleSheet.create({
     height: 200,
     marginTop: 10,
     borderRadius: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#ECE9E4',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#2d4150',
+    fontFamily: 'Lora',
+  },
+  modalText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#666',
+    fontFamily: 'Lora',
+  },
+  modalButton: {
+    backgroundColor: '#00adf5',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontFamily: 'Lora',
   },
 });
 

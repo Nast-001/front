@@ -34,7 +34,7 @@ const SAMPLE_VIDEOS: WorkoutVideo[] = [
     duration: 40,
     calories: 90,
     thumbnailUrl: require('../../assets/djax.png'),
-    videoUrl: 'https://example.com/video1',
+    videoUrl: 'http://192.168.0.176:8000/media/lessons/videos/strenght.mp4',
   },
   {
     id: '2',
@@ -43,7 +43,7 @@ const SAMPLE_VIDEOS: WorkoutVideo[] = [
     duration: 20,
     calories: 40,
     thumbnailUrl: require('../../assets/chatur.png'),
-    videoUrl: 'https://example.com/video2',
+    videoUrl: 'http://192.168.0.176:8000/media/lessons/videos/strenght.mp4',
   },
   {
     id: '3',
@@ -52,7 +52,7 @@ const SAMPLE_VIDEOS: WorkoutVideo[] = [
     duration: 20,
     calories: 40,
     thumbnailUrl: require('../../assets/purvo.png'),
-    videoUrl: 'https://example.com/video3',
+    videoUrl: 'http://192.168.0.176:8000/media/lessons/videos/strenght.mp4',
   },
   {
     id: '4',
@@ -61,7 +61,7 @@ const SAMPLE_VIDEOS: WorkoutVideo[] = [
     duration: 60,
     calories: 150,
     thumbnailUrl: require('../../assets/chatur.png'),
-    videoUrl: 'https://example.com/video4',
+    videoUrl: 'http://192.168.0.176:8000/media/lessons/videos/strenght.mp4',
   },
   {
     id: '5',
@@ -70,7 +70,7 @@ const SAMPLE_VIDEOS: WorkoutVideo[] = [
     duration: 50,
     calories: 100,
     thumbnailUrl: require('../../assets/kumbx.png'),
-    videoUrl: 'https://example.com/video5',
+    videoUrl: 'http://192.168.0.176:8000/media/lessons/videos/strenght.mp4',
   },
   {
     id: '6',
@@ -79,7 +79,7 @@ const SAMPLE_VIDEOS: WorkoutVideo[] = [
     duration: 45,
     calories: 120,
     thumbnailUrl: require('../../assets/ashva.png'),
-    videoUrl: 'https://example.com/video6',
+    videoUrl: 'http://192.168.0.176:8000/media/lessons/videos/strenght.mp4',
   },
   {
     id: '7',
@@ -88,7 +88,7 @@ const SAMPLE_VIDEOS: WorkoutVideo[] = [
     duration: 30,
     calories: 85,
     thumbnailUrl: require('../../assets/ardxa.png'),
-    videoUrl: 'https://example.com/video7',
+    videoUrl: 'http://192.168.0.176:8000/media/lessons/videos/strenght.mp4',
   },
 ];
 

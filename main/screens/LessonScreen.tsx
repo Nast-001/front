@@ -1,18 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ResizeMode, Video } from 'expo-av';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
-  BackHandler,
-  Dimensions,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    BackHandler,
+    Dimensions,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import ExitLessonModal from '../components/ExitLessonModal';
 import { MainTabParamList } from '../navigationTypes';
@@ -124,6 +125,8 @@ const LessonScreen = () => {
     if (saveLesson) {
       try {
         await saveLessonToHistory(lesson);
+        // Обновляем статистику через AsyncStorage
+        await AsyncStorage.setItem('@shouldUpdateStats', 'true');
       } catch (error) {
         console.error('Error saving lesson to history:', error);
       }

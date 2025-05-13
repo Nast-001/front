@@ -31,33 +31,22 @@ type Props = NativeStackScreenProps<RootStackParamList, 'WorkoutDetails'>;
 
 const WorkoutDetailsScreen = ({ route, navigation }: Props) => {
   const { workoutId } = route.params;
-  const [activeExerciseIndex, setActiveExerciseIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<Video>(null);
 
   // Временные данные для демонстрации
   const workout: Workout = {
     id: workoutId,
-    title: 'Йога для начинающих',
+    title: 'РАСТЯЖКА ДЛЯ\nТЕЛА И УМА',
     image: require('../../assets/current_workout.png'),
-    duration: '30 мин',
+    duration: '15 мин',
     calories: 150,
     exercises: [
       {
         name: 'Поза горы',
-        duration: 60,
-        videoUrl: 'https://example.com/video1.mp4',
-      },
-      {
-        name: 'Поза собаки мордой вниз',
-        duration: 45,
-        videoUrl: 'https://example.com/video2.mp4',
-      },
-      {
-        name: 'Поза воина',
-        duration: 30,
-        videoUrl: 'https://example.com/video3.mp4',
-      },
+        duration: 660,
+        videoUrl: 'http://192.168.0.176:8000/media/lessons/videos/day1.mp4',
+      }
     ],
   };
 
@@ -65,16 +54,6 @@ const WorkoutDetailsScreen = ({ route, navigation }: Props) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
-  const handleExercisePress = (index: number) => {
-    if (activeExerciseIndex === index) {
-      setActiveExerciseIndex(null);
-      setIsPlaying(false);
-    } else {
-      setActiveExerciseIndex(index);
-      setIsPlaying(true);
-    }
   };
 
   return (
@@ -106,24 +85,12 @@ const WorkoutDetailsScreen = ({ route, navigation }: Props) => {
       </ImageBackground>
 
       <ScrollView style={styles.content}>
-        <Text style={styles.sectionTitle}>Упражнения</Text>
+        <Text style={styles.sectionTitle}>Ежедневная тренировка
+        </Text>
         {workout.exercises.map((exercise: Exercise, index: number) => (
           <View key={index}>
-            <TouchableOpacity
-              style={[
-                styles.exerciseItem,
-                activeExerciseIndex === index && styles.activeExerciseItem
-              ]}
-              onPress={() => handleExercisePress(index)}
-            >
-              <View style={styles.exerciseInfo}>
-                <Text style={styles.exerciseName}>{exercise.name}</Text>
-                <Text style={styles.exerciseTime}>
-                  {formatTime(exercise.duration)}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            {activeExerciseIndex === index && exercise.videoUrl && (
+        
+            {exercise.videoUrl && (
               <Video
                 ref={videoRef}
                 style={styles.video}
@@ -198,9 +165,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
   },
-  activeExerciseItem: {
-    backgroundColor: '#e8f5e9',
-  },
   exerciseInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -222,4 +186,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WorkoutDetailsScreen; 
+export default WorkoutDetailsScreen;

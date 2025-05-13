@@ -1,7 +1,10 @@
 import { Feather } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { Image, ImageBackground, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Image, ImageBackground, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 type ProfileData = {
   name: string;
@@ -29,6 +32,55 @@ const EditProfileScreen = ({ navigation }: { navigation: any }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentField, setCurrentField] = useState<string>('');
   const [tempValue, setTempValue] = useState<string>('');
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadProfileImage();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfileImage();
+    }, [])
+  );
+
+  const loadProfileImage = async () => {
+    try {
+      const savedImage = await AsyncStorage.getItem('profileImage');
+      if (savedImage) {
+        setProfileImage(savedImage);
+      } else {
+        setProfileImage(null);
+      }
+    } catch (error) {
+      console.error('Error loading profile image:', error);
+    }
+  };
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Ошибка', 'Для загрузки фото необходимо разрешение на доступ к галерее');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+
+    if (!result.canceled) {
+      const imageUri = result.assets[0].uri;
+      setProfileImage(imageUri);
+      try {
+        await AsyncStorage.setItem('profileImage', imageUri);
+      } catch (error) {
+        console.error('Error saving profile image:', error);
+      }
+    }
+  };
 
   const goals = [
     "Изучение основы йоги",
@@ -185,11 +237,13 @@ const EditProfileScreen = ({ navigation }: { navigation: any }) => {
       </ImageBackground>
 
       <View style={styles.profileImageContainer}>
-        <Image
-          source={require('../../assets/default-avatar.png')}
-          style={styles.profileImage}
-        />
-        <TouchableOpacity style={styles.changePhotoButton}>
+        <TouchableOpacity onPress={pickImage}>
+          <Image
+            source={profileImage ? { uri: profileImage } : require('../../assets/default-avatar.png')}
+            style={styles.profileImage}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.changePhotoButton} onPress={pickImage}>
           <Text style={styles.changePhotoText}>Изменить фото</Text>
         </TouchableOpacity>
       </View>

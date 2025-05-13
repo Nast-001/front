@@ -1,14 +1,16 @@
-import { Feather } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Alert, Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { LineChart } from 'react-native-chart-kit';
 import { Circle as SvgCircle, Svg as SvgComponent } from 'react-native-svg';
-import IndividualIcon from '../../assets/individual.svg';
 import ClockIcon from '../../assets/clock.svg';
 import HeartIcon from '../../assets/heart.svg';
+import IndividualIcon from '../../assets/individual.svg';
 import SettingsIcon from '../../assets/settings.svg';
+import { getLessonHistory, SavedLesson } from '../storage/lessonHistory';
 
 type RootStackParamList = {
   Achievements: { date: string };
@@ -79,7 +81,7 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
   });
   const [isModalVisible, setModalVisible] = useState(false);
   const [newWeight, setNewWeight] = useState('');
-  const [avatarError, setAvatarError] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   
   const statsData = {
     statworkouts: { all: 49, week: 6, month: 14, year: 48 },
@@ -87,11 +89,101 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
     statcalories: { all: 8820, week: 1080, month: 2520, year: 8640 }
   };
 
-  const [stats] = useState({
-    workouts: { all: 1, week: 1, month: 1, year: 1 },
-    calories: { all: 174, week: 174, month: 174, year: 174 },
-    minutes: { all: 15, week: 15, month: 15, year: 15 }
+  const [stats, setStats] = useState({
+    workouts: { all: 0, week: 0, month: 0, year: 0 },
+    calories: { all: 0, week: 0, month: 0, year: 0 },
+    minutes: { all: 0, week: 0, month: 0, year: 0 }
   });
+
+  const updateStats = async () => {
+    try {
+      const history = await getLessonHistory();
+      const now = new Date();
+      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const oneYearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+
+      const totalWorkouts = history.length;
+      const weekWorkouts = history.filter(lesson => new Date(lesson.completedAt) >= oneWeekAgo).length;
+      const monthWorkouts = history.filter(lesson => new Date(lesson.completedAt) >= oneMonthAgo).length;
+      const yearWorkouts = history.filter(lesson => new Date(lesson.completedAt) >= oneYearAgo).length;
+
+      const totalMinutes = history.reduce((sum: number, lesson: SavedLesson) => sum + lesson.duration_minutes, 0);
+      const weekMinutes = history
+        .filter(lesson => new Date(lesson.completedAt) >= oneWeekAgo)
+        .reduce((sum: number, lesson: SavedLesson) => sum + lesson.duration_minutes, 0);
+      const monthMinutes = history
+        .filter(lesson => new Date(lesson.completedAt) >= oneMonthAgo)
+        .reduce((sum: number, lesson: SavedLesson) => sum + lesson.duration_minutes, 0);
+      const yearMinutes = history
+        .filter(lesson => new Date(lesson.completedAt) >= oneYearAgo)
+        .reduce((sum: number, lesson: SavedLesson) => sum + lesson.duration_minutes, 0);
+
+      const totalCalories = history.reduce((sum: number, lesson: SavedLesson) => sum + lesson.calories, 0);
+      const weekCalories = history
+        .filter(lesson => new Date(lesson.completedAt) >= oneWeekAgo)
+        .reduce((sum: number, lesson: SavedLesson) => sum + lesson.calories, 0);
+      const monthCalories = history
+        .filter(lesson => new Date(lesson.completedAt) >= oneMonthAgo)
+        .reduce((sum: number, lesson: SavedLesson) => sum + lesson.calories, 0);
+      const yearCalories = history
+        .filter(lesson => new Date(lesson.completedAt) >= oneYearAgo)
+        .reduce((sum: number, lesson: SavedLesson) => sum + lesson.calories, 0);
+
+      setStats({
+        workouts: { 
+          all: totalWorkouts,
+          week: weekWorkouts,
+          month: monthWorkouts,
+          year: yearWorkouts
+        },
+        calories: { 
+          all: totalCalories,
+          week: weekCalories,
+          month: monthCalories,
+          year: yearCalories
+        },
+        minutes: { 
+          all: totalMinutes,
+          week: weekMinutes,
+          month: monthMinutes,
+          year: yearMinutes
+        }
+      });
+    } catch (error) {
+      console.error('Error updating stats:', error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkAndUpdateStats = async () => {
+        const shouldUpdate = await AsyncStorage.getItem('@shouldUpdateStats');
+        if (shouldUpdate === 'true') {
+          await AsyncStorage.removeItem('@shouldUpdateStats');
+          await updateStats();
+        } else {
+          await updateStats();
+        }
+      };
+
+      loadProfileImage();
+      checkAndUpdateStats();
+    }, [])
+  );
+
+  const loadProfileImage = async () => {
+    try {
+      const savedImage = await AsyncStorage.getItem('profileImage');
+      if (savedImage) {
+        setProfileImage(savedImage);
+      } else {
+        setProfileImage(null);
+      }
+    } catch (error) {
+      console.error('Error loading profile image:', error);
+    }
+  };
 
   const calculateDifference = () => {
     return weights.current - weights.start;
@@ -207,16 +299,14 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image source={require('../../assets/background.png')} style={styles.backgroundImage} />
-        </View>
-        <View style={styles.profileSection}>
-          <Image 
-            source={avatarError ? require('../../assets/default-avatar.png') : { uri: 'https://via.placeholder.com/100' }}
-            style={styles.avatar}
-            onError={() => setAvatarError(true)}
-          />
-        </View>
-        
-    
+      </View>
+      <View style={styles.profileSection}>
+        <Image 
+          source={profileImage ? { uri: profileImage } : require('../../assets/default-avatar.png')}
+          style={styles.avatar}
+        />
+      </View>
+      
       <View style={styles.contentContainer}>
       <View style={styles.iconsContainer}>
           <TouchableOpacity 
@@ -267,28 +357,30 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
           />
         </View>
 
-        {/* Табы периодов */}
-        <View style={styles.tabContainer}>
-          {renderTabButton('Все', 'all')}
-          {renderTabButton('Неделя', 'week')}
-          {renderTabButton('Месяц', 'month')}
-          {renderTabButton('Год', 'year')}
-          
+        {/* Табы периодов и статистика */}
+        <View style={styles.tabsAndStatsWrapper}>
+          <View style={styles.tabContainer}>
+            {renderTabButton('Все', 'all')}
+            {renderTabButton('Неделя', 'week')}
+            {renderTabButton('Месяц', 'month')}
+            {renderTabButton('Год', 'year')}
+          </View>
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{statsData.statworkouts[activeTab]}</Text>
+              <Text style={styles.statLabel}>Тренировка</Text>
+            </View>
+            <View style={styles.statItem1}>
+              <Text style={styles.statValue}>{statsData.statminutes[activeTab]}</Text>
+              <Text style={styles.statLabel}>Минут</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{statsData.statcalories[activeTab]}</Text>
+              <Text style={styles.statLabel}>Калории</Text>
+            </View>
+          </View>
         </View>
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{statsData.statworkouts[activeTab]}</Text>
-            <Text style={styles.statLabel}>Тренировка</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{statsData.statminutes[activeTab]}</Text>
-            <Text style={styles.statLabel}>Минут</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{statsData.statcalories[activeTab]}</Text>
-            <Text style={styles.statLabel}>Калории</Text>
-          </View>
-        </View>
+
         {/* Календарь */}
         <Calendar
           style={styles.calendar}
@@ -422,15 +514,20 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   profileSection: {
-    padding: 15,
     alignItems: 'center',
     marginBottom: 20,
+    marginTop: 15,
   },
   avatar: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: '#fff',
+  
   },
+
+  
   iconsContainer: {
     marginTop: 0,
     marginBottom: 10,
@@ -450,18 +547,38 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontFamily: 'Lora',
   },
-  statsContainer: {
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
+  tabsAndStatsWrapper: {
+    backgroundColor: '#C9C9C9',
+    borderRadius: 16,
+    marginTop: 10,
+    overflow: 'hidden',
+  },
+  tabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: 'white',
+    paddingVertical: 0,
+    backgroundColor: '#C9C9C9',
+    borderBottomColor: '#f0f0f0',
+    height: 40,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#ffffff',
     paddingVertical: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#ECE9E4',
+ 
   },
   statItem: {
+    paddingHorizontal: 10,
     alignItems: 'center',
+  },
+  statItem1: {
+    paddingHorizontal: 25,
+    alignItems: 'center',
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderLeftColor: '#ACACAC',
+    borderRightColor: '#ACACAC',
   },
   statValue: {
     fontSize: 24,
@@ -484,37 +601,6 @@ const styles = StyleSheet.create({
   progressItem: {
     alignItems: 'center',
     marginHorizontal: 10,
-  },
-  tabContainer: {
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 16,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  tabButton: {
-    borderWidth: 0.3,
-    borderColor: 'black',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#f0f0f0',
-  },
-  activeTabButton: {
-    backgroundColor: 'white',
-  },
-  tabText: {
-    color: 'black',
-    fontSize: 14,
-    fontFamily: 'Lora',
-  },
-  activeTabText: {
-    color: 'black',
-    fontFamily: 'Lora',
   },
   calendar: {
     marginVertical: 16,
@@ -633,6 +719,30 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     fontWeight: 'bold',
+    fontFamily: 'Lora',
+  },
+  tabButton: {
+    flex: 1,
+    borderTopEndRadius: 15,
+    borderTopStartRadius: 15,
+    
+    
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#C9C9C9',
+  },
+  activeTabButton: {
+    backgroundColor: 'white',
+  },
+  tabText: {
+    color: 'black',
+    fontSize: 14,
+    fontFamily: 'Lora',
+  },
+  activeTabText: {
+    color: 'black',
     fontFamily: 'Lora',
   },
 });

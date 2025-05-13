@@ -5,6 +5,16 @@ import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
+// Import body images
+const bodyImage = require('../assets/body.png');
+const allImage = require('../assets/all.png');
+const neckImage = require('../assets/neck.png');
+const handsImage = require('../assets/hands.png');
+const backImage = require('../assets/body_back.png');
+const pressImage = require('../assets/press.png');
+const hipsImage = require('../assets/hips.png');
+const legsImage = require('../assets/legs.png');
+
 type BodyAreasNavigationProp = StackNavigationProp<RootStackParamList, 'BodyAreas'>;
 type BodyAreasRouteProp = RouteProp<RootStackParamList, 'BodyAreas'>;
 
@@ -16,6 +26,7 @@ type Props = {
 const BodyAreasScreen = ({ navigation, route }: Props) => {
   const [primaryArea, setPrimaryArea] = useState<string | null>(null);
   const [secondaryAreas, setSecondaryAreas] = useState<string[]>([]);
+  const [currentBodyImage, setCurrentBodyImage] = useState(bodyImage);
   
   const formData = route.params?.formData || {};
   const gender = route.params?.gender;
@@ -26,10 +37,16 @@ const BodyAreasScreen = ({ navigation, route }: Props) => {
   ];
   const togglePrimaryArea = (area: string) => {
     if (area === "Всё тело") {
-      setPrimaryArea(prev => prev === area ? null : area);
+      setPrimaryArea(prevArea => {
+        setCurrentBodyImage(prevArea === area ? bodyImage : allImage);
+        return prevArea === area ? null : area;
+      });
       setSecondaryAreas([]);
     } else {
-      setPrimaryArea(prev => prev === area ? null : area);
+      setPrimaryArea(prevArea => {
+        setCurrentBodyImage(bodyImage);
+        return prevArea === area ? null : area;
+      });
       setSecondaryAreas([]);
     }
   };
@@ -40,12 +57,32 @@ const BodyAreasScreen = ({ navigation, route }: Props) => {
     if (area === "Всё тело") {
       setPrimaryArea("Всё тело");
       setSecondaryAreas([]);
+      setCurrentBodyImage(allImage);
     } else {
-      setSecondaryAreas(prev => 
-        prev.includes(area) 
+      setSecondaryAreas(prev => {
+        const newAreas = prev.includes(area) 
           ? prev.filter(item => item !== area) 
-          : [...prev, area]
-      );
+          : [...prev, area];
+        
+        // Update body image based on selected areas
+        if (newAreas.length === 0) {
+          setCurrentBodyImage(bodyImage);
+        } else if (area === "Шея и плечи") {
+          setCurrentBodyImage(neckImage);
+        } else if (area === "Руки и грудь") {
+          setCurrentBodyImage(handsImage);
+        } else if (area === "Спина") {
+          setCurrentBodyImage(backImage);
+        } else if (area === "Ягодицы и Бедра") {
+          setCurrentBodyImage(hipsImage);
+        } else if (area === "Ноги и голени") {
+          setCurrentBodyImage(legsImage);
+        } else if (area === "Пресс и кор") {
+          setCurrentBodyImage(pressImage);
+        }
+        
+        return newAreas;
+      });
     }
   };
 
@@ -88,10 +125,11 @@ const BodyAreasScreen = ({ navigation, route }: Props) => {
 
       <View style={styles.contentContainer}>
         <Image 
-          source={require('../assets/body.png')} 
+          source={currentBodyImage} 
           style={styles.bodyImage}
           resizeMode="contain"
         />
+       
         <View style={styles.checkboxContainer}>
           {bodyAreas.map((area, index) => (
             <View key={index} style={[
@@ -138,7 +176,6 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#ECE9E4',
     fontFamily: 'Lora',
-
   },
   progressContainer: {
     flexDirection: 'row',
@@ -163,7 +200,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
     fontFamily: 'Lora',
-
   },
   subtitle: {
     fontSize: 16,
@@ -171,7 +207,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
     fontFamily: 'Lora',
-
   },
   contentContainer: {
     flexDirection: 'row',
@@ -185,10 +220,10 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
     alignSelf: 'center',
+    position: 'relative',
   },
   checkboxContainer: {
     fontFamily: 'Lora',
-
     flex: 1,
     marginLeft: 20,
   },
@@ -203,24 +238,19 @@ const styles = StyleSheet.create({
     padding: 12,
     justifyContent: 'space-between',
     fontFamily: 'Lora',
-
   },
   checkbox: {
     marginLeft: 8,
     width: 24,
     height: 24,
     fontFamily: 'Lora',
-
-    
   },
   checkboxLabel: {
     fontSize: 16,
-    
   },
   disabledText: {
     color: '#AAA',
     fontFamily: 'Lora',
-
   },
   button: {
     backgroundColor: '#4D4D4D',
@@ -229,7 +259,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     fontFamily: 'Lora',
-
   },
   disabledButton: {
     backgroundColor: '#4D4D4D',
@@ -239,7 +268,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Lora',
-
   },
   touchableArea: {
     flexDirection: 'row',
@@ -247,8 +275,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     fontFamily: 'Lora',
-
   },
+  
 });
 
 export default BodyAreasScreen;

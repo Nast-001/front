@@ -18,7 +18,7 @@ const DAILY_WORKOUTS = [
     id: '1',
     title: 'РАСТЯЖКА ДЛЯ\nТЕЛА И УМА',
     image: require('../../assets/current_workout.png'),
-    duration: '20 мин',
+    duration: '15 мин',
     calories: 150,
     exercises: [
       { 
@@ -40,9 +40,9 @@ const DAILY_WORKOUTS = [
   },
   {
     id: '2',
-    title: 'ЙОГА ДЛЯ\nНАЧИНАЮЩИХ',
+    title: 'СИЛОВАЯ ЙОГА',
     image: require('../../assets/current_workout.png'),
-    duration: '25 мин',
+    duration: '30 мин',
     calories: 180,
     exercises: [
       { 
@@ -64,9 +64,9 @@ const DAILY_WORKOUTS = [
   },
   {
     id: '3',
-    title: 'СИЛОВАЯ\nТРЕНИРОВКА',
+    title: 'ВОССТАНАВЛИВАЮЩАЯ ЙОГА',
     image: require('../../assets/current_workout.png'),
-    duration: '30 мин',
+    duration: '45 мин',
     calories: 250,
     exercises: [
       { 
@@ -94,12 +94,12 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState('Настя');
   const [currentWorkout, setCurrentWorkout] = useState(DAILY_WORKOUTS[0]);
+  const [currentDay, setCurrentDay] = useState(1);
 
   useEffect(() => {
     fetchCategories();
-    // Выбираем случайную тренировку
-    const randomIndex = Math.floor(Math.random() * DAILY_WORKOUTS.length);
-    setCurrentWorkout(DAILY_WORKOUTS[randomIndex]);
+    // Выбираем тренировку для первого дня
+    setCurrentWorkout(DAILY_WORKOUTS[0]);
   }, []);
 
   const fetchCategories = async () => {
@@ -131,7 +131,7 @@ const HomeScreen = () => {
         },
         { 
           id: '5', 
-          title: 'ЙОГА ДЛЯ НАЧИНАЮЩИХ', 
+          title: 'РАСТЯЖКА ДЛЯ\nТЕЛА И УМА', 
           image: require('../../assets/beginner.png'),
           url: 'beginners'
         },
@@ -269,13 +269,45 @@ const HomeScreen = () => {
     }
   };
 
+  const handlePreviousDay = () => {
+    if (currentDay > 1) {
+      setCurrentDay(prev => prev - 1);
+      // При переходе на предыдущий день меняем тренировку
+      setCurrentWorkout(DAILY_WORKOUTS[(currentDay - 2) % DAILY_WORKOUTS.length]);
+    }
+  };
+
+  const handleNextDay = () => {
+    if (currentDay < 30) {
+      setCurrentDay(prev => prev + 1);
+      // При переходе на следующий день меняем тренировку
+      setCurrentWorkout(DAILY_WORKOUTS[currentDay % DAILY_WORKOUTS.length]);
+    }
+  };
+
+  const handleWorkoutPress = () => {
+    if (currentDay > 1) {
+      Alert.alert(
+        'Урок недоступен',
+        `Этот урок будет доступен на ${currentDay} день. Продолжайте тренировки, чтобы открыть новые уроки!`,
+        [{ text: 'Понятно' }]
+      );
+      return;
+    }
+    navigation.navigate('WorkoutDetails', { workout: currentWorkout });
+  };
+
   const renderCurrentWorkout = () => (
     <View>
       <View style={styles.topBar}>
         <View style={styles.dayContainer}>
-          <Text style={styles.arrow}>◀</Text>
-          <Text style={styles.dayText}>ДЕНЬ 1</Text>
-          <Text style={styles.arrow}>▶</Text>
+          <TouchableOpacity onPress={handlePreviousDay}>
+            <Text style={[styles.arrow, currentDay === 1 && styles.disabledArrow]}>◀</Text>
+          </TouchableOpacity>
+          <Text style={styles.dayText}>ДЕНЬ {currentDay}</Text>
+          <TouchableOpacity onPress={handleNextDay}>
+            <Text style={[styles.arrow, currentDay === 30 && styles.disabledArrow]}>▶</Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.planContainer}>
           <Text style={styles.planText}>твой план</Text>
@@ -283,7 +315,7 @@ const HomeScreen = () => {
       </View>
       <TouchableOpacity 
         style={styles.currentWorkoutCard}
-        onPress={() => navigation.navigate('WorkoutDetails', { workout: currentWorkout })}
+        onPress={handleWorkoutPress}
       >
         <ImageBackground
           source={currentWorkout.image}
@@ -303,7 +335,7 @@ const HomeScreen = () => {
             </View>
             <TouchableOpacity 
               style={styles.playButton}
-              onPress={() => navigation.navigate('WorkoutDetails', { workout: currentWorkout })}
+              onPress={handleWorkoutPress}
             >
               <Text style={styles.playButtonText}>▶</Text>
             </TouchableOpacity>
@@ -411,6 +443,9 @@ const styles = StyleSheet.create({
   arrow: {
     color: '#333',
     fontSize: 12,
+  },
+  disabledArrow: {
+    color: '#999',
   },
   dayText: {
     color: '#333',
