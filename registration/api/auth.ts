@@ -1,12 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-const API_URL = 'http://192.168.0.176:8000/api'; // Измените на ваш URL API
+const API_URL = 'http://192.168.0.176:8000/api'; 
 
-// Типы для Django полей
 type EmailField = string;
 type CharField = string;
 
-// Интерфейсы для типизации данных
 interface UserData {
   email: EmailField;
   name?: CharField;
@@ -37,7 +35,6 @@ interface AuthResponse {
   user: UserData;
 }
 
-// Функция для входа пользователя
 export const login = async (email: string, password: string): Promise<AuthResponse> => {
   try {
     const response = await axios.post<AuthResponse>(`${API_URL}/login/`, {
@@ -56,23 +53,19 @@ export const login = async (email: string, password: string): Promise<AuthRespon
   }
 };
 
-// Функция для регистрации пользователя
 export const register = async (userData: UserData): Promise<AuthResponse> => {
   try {
-    // Убедимся, что обязательные поля присутствуют
     const requiredFields = {
       email: userData.email,
       password: userData.password,
       password2: userData.password2,
-      name: userData.email.split('@')[0] // Используем часть email как имя по умолчанию
+      name: userData.email.split('@')[0]
     };
 
-    // Проверим наличие обязательных полей
     if (!requiredFields.email || !requiredFields.password || !requiredFields.password2) {
       throw new Error('Отсутствуют обязательные поля');
     }
 
-    // Отправляем необходимые поля на сервер
     const response = await axios.post<AuthResponse>(`${API_URL}/register/`, {
       email: userData.email,
       password: userData.password,
@@ -92,14 +85,11 @@ export const register = async (userData: UserData): Promise<AuthResponse> => {
   }
 };
 
-// Функция для сохранения данных пользователя
 export const saveUserData = async (userData: UserData): Promise<boolean> => {
   try {
-    // Получаем существующие данные
     const existingDataStr = await AsyncStorage.getItem('userData');
     const existingData = existingDataStr ? JSON.parse(existingDataStr) : {};
 
-    // Объединяем существующие данные с новыми
     const mergedData = {
       ...existingData,
       ...userData
@@ -112,7 +102,6 @@ export const saveUserData = async (userData: UserData): Promise<boolean> => {
       hasPassword2: !!mergedData.password2
     });
 
-    // Проверяем обязательные поля
     if (!mergedData.email || !mergedData.password || !mergedData.password2) {
       console.error('Попытка сохранить неполные данные:', {
         email: mergedData.email ? 'присутствует' : 'отсутствует',
@@ -125,7 +114,6 @@ export const saveUserData = async (userData: UserData): Promise<boolean> => {
     const jsonValue = JSON.stringify(mergedData);
     await AsyncStorage.setItem('userData', jsonValue);
     
-    // Проверяем, что данные действительно сохранились
     const savedData = await AsyncStorage.getItem('userData');
     if (!savedData) {
       console.error('Данные не сохранились в AsyncStorage');
@@ -147,10 +135,8 @@ export const saveUserData = async (userData: UserData): Promise<boolean> => {
   }
 };
 
-// Функция для получения данных пользователя
 export const getUserData = async (): Promise<UserData | null> => {
   try {
-    // Сначала пробуем получить данные из authData
     const authData = await AsyncStorage.getItem('authData');
     if (authData) {
       const parsedAuthData = JSON.parse(authData);
@@ -162,7 +148,6 @@ export const getUserData = async (): Promise<UserData | null> => {
       return parsedAuthData;
     }
 
-    // Если нет authData, пробуем получить из userData
     const userData = await AsyncStorage.getItem('userData');
     if (!userData) {
       console.error('Данные пользователя не найдены в AsyncStorage');
@@ -186,7 +171,6 @@ export const getUserData = async (): Promise<UserData | null> => {
   }
 };
 
-// Функция для выхода пользователя
 export const logout = async (): Promise<boolean> => {
   try {
     await AsyncStorage.removeItem('userToken');
@@ -198,7 +182,6 @@ export const logout = async (): Promise<boolean> => {
   }
 };
 
-// Функция для проверки авторизации
 export const checkAuth = async (): Promise<boolean> => {
   try {
     const token = await AsyncStorage.getItem('userToken');
@@ -209,7 +192,6 @@ export const checkAuth = async (): Promise<boolean> => {
   }
 };
 
-// Функция для получения токена
 export const getToken = async (): Promise<string | null> => {
   try {
     return await AsyncStorage.getItem('userToken');
@@ -219,10 +201,8 @@ export const getToken = async (): Promise<string | null> => {
   }
 };
 
-// Функция для отправки данных регистрации на бэкенд
 export const sendRegistrationData = async (): Promise<AuthResponse> => {
   try {
-    // Получаем данные из обоих источников
     const [authDataStr, userDataStr] = await Promise.all([
       AsyncStorage.getItem('authData'),
       AsyncStorage.getItem('userData')
@@ -231,11 +211,10 @@ export const sendRegistrationData = async (): Promise<AuthResponse> => {
     const authData = authDataStr ? JSON.parse(authDataStr) : {};
     const userData = userDataStr ? JSON.parse(userDataStr) : {};
 
-    // Объединяем данные, приоритет отдаем authData для email и паролей
     const registrationData: UserData = {
-      ...userData,  // Сначала берем все данные пользователя
-      ...authData,  // Затем перезаписываем email и пароли из authData
-      name: userData.name || authData.email?.split('@')[0] // Используем имя из userData или часть email
+      ...userData,
+      ...authData,
+      name: userData.name || authData.email?.split('@')[0]
     };
 
     console.log('Подготовленные данные для регистрации:', {
@@ -248,12 +227,10 @@ export const sendRegistrationData = async (): Promise<AuthResponse> => {
       weight: registrationData.weight
     });
 
-    // Проверяем наличие обязательных полей
     if (!registrationData.email || !registrationData.password || !registrationData.password2) {
       throw new Error('Отсутствуют обязательные поля для регистрации');
     }
 
-    // Отправляем данные на сервер
     const response = await axios.post<AuthResponse>(`${API_URL}/register/`, registrationData);
     
     if (response.data.token) {

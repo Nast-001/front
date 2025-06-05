@@ -89,7 +89,6 @@ const FlexibilityScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Индикатор прогресса (3 полоски, активна третья) */}
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.completedProgressBar]} />
         <View style={[styles.progressBar, styles.activeProgressBar]} />

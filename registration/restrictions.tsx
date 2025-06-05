@@ -21,7 +21,7 @@ const RestrictionsScreen = () => {
   ];
 
   const handleOptionToggle = (id: number) => {
-    if (id === 1) { // "Нет ограничений"
+    if (id === 1) { 
       if (selectedOptions.includes(1)) {
         setSelectedOptions([]);
       } else {

@@ -18,11 +18,9 @@ export const saveLessonToHistory = async (lesson: Lesson): Promise<void> => {
   try {
     console.log('Saving lesson to history:', lesson);
     
-    // Get current history
     const historyJson = await AsyncStorage.getItem(STORAGE_KEY);
     console.log('Current history from storage:', historyJson);
     
-    // Parse or initialize history
     let history: SavedLesson[] = [];
     if (historyJson) {
       try {
@@ -34,7 +32,6 @@ export const saveLessonToHistory = async (lesson: Lesson): Promise<void> => {
       }
     }
     
-    // Create new lesson with completion date
     const newLesson: SavedLesson = {
       id: lesson.id,
       title: lesson.title,
@@ -47,15 +44,12 @@ export const saveLessonToHistory = async (lesson: Lesson): Promise<void> => {
     };
     console.log('New lesson to save:', newLesson);
     
-    // Add to beginning of history
     const newHistory = [newLesson, ...history];
     console.log('New history to save:', newHistory);
     
-    // Save to storage
     const newHistoryJson = JSON.stringify(newHistory);
     await AsyncStorage.setItem(STORAGE_KEY, newHistoryJson);
     
-    // Verify save
     const verifyJson = await AsyncStorage.getItem(STORAGE_KEY);
     const verifyHistory = verifyJson ? JSON.parse(verifyJson) : [];
     console.log('Verified history after save:', verifyHistory);

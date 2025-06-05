@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
-// Import body images
 const bodyImage = require('../assets/body.png');
 const allImage = require('../assets/all.png');
 const neckImage = require('../assets/neck.png');
@@ -64,7 +63,6 @@ const BodyAreasScreen = ({ navigation, route }: Props) => {
           ? prev.filter(item => item !== area) 
           : [...prev, area];
         
-        // Update body image based on selected areas
         if (newAreas.length === 0) {
           setCurrentBodyImage(bodyImage);
         } else if (area === "Шея и плечи") {

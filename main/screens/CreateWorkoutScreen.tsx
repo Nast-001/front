@@ -105,12 +105,10 @@ const CreateWorkoutScreen = () => {
   });
   const [savedWorkouts, setSavedWorkouts] = useState<Array<{ name: string; videos: WorkoutVideo[]; settings: WorkoutSettings }>>([]);
 
-  // Загрузка сохраненных тренировок при запуске
   useEffect(() => {
     loadSavedWorkouts();
   }, []);
 
-  // Загрузка тренировок из AsyncStorage
   const loadSavedWorkouts = async () => {
     try {
       const savedWorkoutsJson = await AsyncStorage.getItem('savedWorkouts');
@@ -122,7 +120,6 @@ const CreateWorkoutScreen = () => {
     }
   };
 
-  // Сохранение тренировок в AsyncStorage
   const saveWorkoutsToStorage = async (workouts: Array<{ name: string; videos: WorkoutVideo[]; settings: WorkoutSettings }>) => {
     try {
       await AsyncStorage.setItem('savedWorkouts', JSON.stringify(workouts));

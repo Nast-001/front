@@ -33,7 +33,6 @@ const TimeScreen = () => {
       try {
         setLoading(true);
         
-        // Подготавливаем данные для сохранения локально
         if (!name) {
           Alert.alert('Ошибка', 'Имя пользователя обязательно');
           return;
@@ -49,13 +48,10 @@ const TimeScreen = () => {
           height: height && !isNaN(Number(height)) ? parseInt(height) : undefined,
           weight: weight && !isNaN(Number(weight)) ? parseInt(weight) : undefined,
           workout_duration: selectedTime,
-          // Другие поля будут добавлены позже
         };
         
-        // Сохраняем данные пользователя локально
         await saveUserData(userData);
         
-        // Переходим на следующий экран без отправки данных на сервер
         navigation.navigate('GoalFormation', {
           ...formData,
           gender,
@@ -76,7 +72,6 @@ const TimeScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Progress bar */}
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.completedProgressBar]} />
         <View style={[styles.progressBar, styles.completedProgressBar]} />
@@ -132,7 +127,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ECE9E4',
     fontFamily: 'Lora',
-
   },
   progressContainer: {
     flexDirection: 'row',
@@ -164,7 +158,6 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     lineHeight: 32,
     fontFamily: 'Lora-Bold',
-
   },
   optionsContainer: {
     marginTop: 40,
@@ -187,13 +180,11 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     paddingLeft: 10,
     fontFamily: 'Lora',
-
   },
   selectedOptionText: {
     color: '#FFFFFF',
     fontWeight: '500',
     fontFamily: 'Lora',
-
   },
   continueButton: {
     backgroundColor: '#4D4D4D',
@@ -210,7 +201,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     fontFamily: 'Lora',
-
   },
 });
 

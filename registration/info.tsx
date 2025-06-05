@@ -55,26 +55,22 @@ const InfoScreen = () => {
   const handleContinue = async () => {
     if (name && age && height && weight) {
       try {
-        // Получаем данные авторизации
         const authDataStr = await AsyncStorage.getItem('authData');
         const authData = authDataStr ? JSON.parse(authDataStr) : {};
         
-        // Создаем полный объект данных
         const userData = {
-          ...authData, // Сначала берем данные авторизации (email, password)
-          ...formData, // Затем данные из route.params
-          gender,      // Пол из route.params
-          name,        // Имя из локального состояния
+          ...authData, 
+          ...formData, 
+          gender,     
+          name,     
           age: Number(age),
           height: Number(height),
           weight: Number(weight)
         };
         
-        // Сохраняем объединенные данные
         await AsyncStorage.setItem('userData', JSON.stringify(userData));
         console.log('Объединенные данные сохранены:', userData);
         
-        // Переходим на следующий экран
         navigation.navigate('Time', userData);
       } catch (error) {
         console.error('Ошибка при сохранении данных:', error);
@@ -92,7 +88,6 @@ const InfoScreen = () => {
 
   return (
     <View style={styles.container}>      
-      {/* Прогресс-бар (1/3) */}
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.completedProgressBar]} />
         <View style={[styles.progressBar, styles.completedProgressBar]} />
@@ -100,7 +95,6 @@ const InfoScreen = () => {
       </View>
       
       <View style={styles.formContainer}>
-        {/* Имя */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Имя</Text>
           <TextInput
@@ -111,7 +105,6 @@ const InfoScreen = () => {
           />
         </View>
         
-        {/* Возраст */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Возраст</Text>
           <TextInput
@@ -124,7 +117,6 @@ const InfoScreen = () => {
           />
         </View>
         
-        {/* Рост */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Рост: {displayHeight} см</Text>
           <Slider
@@ -141,7 +133,6 @@ const InfoScreen = () => {
           />
         </View>
         
-        {/* Вес */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Вес: {displayWeight} кг</Text>
           <Slider

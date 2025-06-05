@@ -25,7 +25,6 @@ const BreathScreen = () => {
 
   return (
     <View style={styles.container}>      
-      {/* Прогресс-бар (2/3) */}
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.completedProgressBar]} />
         <View style={[styles.progressBar, styles.activeProgressBar]} />

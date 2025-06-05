@@ -27,14 +27,11 @@ const NewsDetailScreen = () => {
   const [newsDetail, setNewsDetail] = useState<NewsDetail | null>(null);
   const [imageError, setImageError] = useState(false);
 
-  // Функция для обработки URL изображений
   const processImageUrl = (url: string) => {
     if (!url) return '';
-    // Если URL уже полный, возвращаем его как есть
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    // Иначе добавляем базовый URL бэкенда
     return `http://192.168.0.176:8000${url}`;
   };
 

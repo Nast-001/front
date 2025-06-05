@@ -16,7 +16,6 @@ const GoalFormationScreen = ({ navigation }: Props) => {
   const [isSendingData, setIsSendingData] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // Эффект "дыхания"
   useEffect(() => {
     if (imageLoaded) {
       const breathingAnimation = Animated.loop(
@@ -39,15 +38,12 @@ const GoalFormationScreen = ({ navigation }: Props) => {
     }
   }, [imageLoaded, scaleAnim]);
 
-  // Отправка данных на бэкенд и переход на страницу уведомлений
   useEffect(() => {
     const sendDataAndNavigate = async () => {
       try {
         setIsSendingData(true);
-        // Отправляем данные на бэкенд
         await sendRegistrationData();
         
-        // Переходим на страницу уведомлений
         navigation.navigate('Notification', {});
       } catch (error: any) {
         console.error('Ошибка при отправке данных:', error);
@@ -61,7 +57,6 @@ const GoalFormationScreen = ({ navigation }: Props) => {
       }
     };
 
-    // Задержка для отображения анимации
     const timer = setTimeout(() => {
       sendDataAndNavigate();
     }, 2500);

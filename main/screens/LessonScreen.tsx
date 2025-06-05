@@ -34,7 +34,6 @@ const LessonScreen = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const videoRef = useRef<Video>(null);
 
-  // Handle hardware back button
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (navigation.isFocused() && !route.params?.fromHistory) {
@@ -64,19 +63,16 @@ const LessonScreen = () => {
         setIsLoading(true);
         setError(null);
         
-        // First check with HEAD request
         const headResponse = await fetch(streamUrl, { method: 'HEAD' });
         if (!headResponse.ok) {
           throw new Error(`Video unavailable. Status: ${headResponse.status}`);
         }
         
-        // Then verify content type
         const contentType = headResponse.headers.get('content-type');
         if (!contentType?.startsWith('video/')) {
           throw new Error('Invalid video content type');
         }
         
-        // If we got here, video should be available
         setIsLoading(false);
       } catch (error) {
         console.error('Error checking video:', error);
@@ -88,7 +84,6 @@ const LessonScreen = () => {
     checkVideo();
   }, [lesson.video_file]);
 
-  // Проверяем, является ли урок избранным
   useEffect(() => {
     const checkFavorite = async () => {
       const favorite = await isLessonFavorite(lesson.id);
@@ -97,7 +92,6 @@ const LessonScreen = () => {
     checkFavorite();
   }, [lesson.id]);
 
-  // Пауза видео при потере фокуса
   useFocusEffect(() => {
     return () => {
       if (videoRef.current) {
@@ -125,7 +119,6 @@ const LessonScreen = () => {
     if (saveLesson) {
       try {
         await saveLessonToHistory(lesson);
-        // Обновляем статистику через AsyncStorage
         await AsyncStorage.setItem('@shouldUpdateStats', 'true');
       } catch (error) {
         console.error('Error saving lesson to history:', error);

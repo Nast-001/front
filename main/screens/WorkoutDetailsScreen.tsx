@@ -34,7 +34,6 @@ const WorkoutDetailsScreen = ({ route, navigation }: Props) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<Video>(null);
 
-  // Временные данные для демонстрации
   const workout: Workout = {
     id: workoutId,
     title: 'РАСТЯЖКА ДЛЯ\nТЕЛА И УМА',
@@ -85,8 +84,24 @@ const WorkoutDetailsScreen = ({ route, navigation }: Props) => {
       </ImageBackground>
 
       <ScrollView style={styles.content}>
-        <Text style={styles.sectionTitle}>Ежедневная тренировка
-        </Text>
+        <View style={styles.tagsContainer}>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>Йога</Text>
+          </View>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>Растяжка</Text>
+          </View>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>Медитация</Text>
+          </View>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>Дыхание</Text>
+          </View>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>Релакс</Text>
+          </View>
+        </View>
+        <Text style={styles.sectionTitle}>Ежедневная тренировка</Text>
         {workout.exercises.map((exercise: Exercise, index: number) => (
           <View key={index}>
         
@@ -153,6 +168,24 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 15,
+  },
+  tag: {
+    backgroundColor: '#E8E4DF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  tagText: {
+    color: '#333',
+    fontSize: 14,
+    fontFamily: 'Lora',
   },
   sectionTitle: {
     fontSize: 20,

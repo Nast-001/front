@@ -22,26 +22,22 @@ const HelloScreen = () => {
       setLoading(true);
 
       if (isLogin) {
-        // Переходим сразу на HomeScreen без валидации
         navigation.reset({
           index: 0,
           routes: [{ name: 'MainTab' }],
         });
       } else {
-        // Проверяем пароли при регистрации
         if (formData.password !== formData.password2) {
           Alert.alert('Ошибка', 'Пароли не совпадают');
           return;
         }
 
-        // Сохраняем данные для регистрации
         await AsyncStorage.setItem('authData', JSON.stringify({
           email: formData.email,
           password: formData.password,
           password2: formData.password2,
         }));
 
-        // Переходим на следующий экран согласно последовательности в App.tsx
         navigation.navigate('Reg', { formData });
       }
     } catch (error: any) {

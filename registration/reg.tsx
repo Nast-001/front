@@ -17,7 +17,6 @@ const RegistPage = ({ navigation, route }: Props) => {
   const handleGenderSelect = async (gender: string) => {
     setSelectedGender(gender);
     
-    // Преобразуем пол в формат, который ожидает API
     let apiGender: 'M' | 'F' | 'N' | 'prefer_not_to_say' = 'prefer_not_to_say';
     
     if (gender === 'male') {
@@ -28,7 +27,6 @@ const RegistPage = ({ navigation, route }: Props) => {
       apiGender = 'N';
     }
     
-    // Сохраняем данные в AsyncStorage
     const userData = {
       ...formData,
       gender: apiGender
@@ -41,7 +39,6 @@ const RegistPage = ({ navigation, route }: Props) => {
       console.error('Ошибка при сохранении данных:', error);
     }
     
-    // Переходим на следующий экран с сохраненными данными
     navigation.navigate('GoalsScreen', {
       ...formData,
       gender: apiGender

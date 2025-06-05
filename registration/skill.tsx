@@ -34,7 +34,6 @@ const SkillScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Индикатор прогресса */}
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, styles.activeProgressBar]} />
         <View style={[styles.progressBar, styles.completedProgressBar]} />
@@ -43,7 +42,6 @@ const SkillScreen = () => {
       
       <Text style={styles.questionText}>Вы уже когда-нибудь пробовали йогу?</Text>
       
-      {/* Варианты выбора без чекбоксов */}
       <View style={styles.optionsContainer}>
         {options.map((option) => (
           <TouchableOpacity
@@ -63,7 +61,6 @@ const SkillScreen = () => {
         ))}
       </View>
       
-      {/* Кнопка Продолжить */}
       <TouchableOpacity
         style={[
           styles.continueButton,

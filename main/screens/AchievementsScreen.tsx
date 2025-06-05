@@ -6,7 +6,6 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fonts } from '../../src/theme/fonts';
 
-// Определяем локальный тип для навигации
 type RootStackParamList = {
   Achievements: { date: string };
   WorkoutDetails: { workoutId: string };

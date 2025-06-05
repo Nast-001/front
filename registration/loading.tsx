@@ -14,7 +14,6 @@ const LoadingScreen = ({ navigation }: Props) => {
   const [isLoading, setIsLoading] = useState(true);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // Эффект "дыхания"
   useEffect(() => {
     if (imageLoaded) {
       const breathingAnimation = Animated.loop(
@@ -37,7 +36,6 @@ const LoadingScreen = ({ navigation }: Props) => {
     }
   }, [imageLoaded, scaleAnim]);
 
-  // Автоматический переход на Skill через 2.5 секунды
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);

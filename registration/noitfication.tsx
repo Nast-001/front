@@ -5,12 +5,10 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type RootStackParamList = {
   Hello: undefined;
-  // добавьте другие экраны по необходимости
 };
 
 type NavigationType = NavigationProp<RootStackParamList>;
 
-// Configure notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -23,7 +21,6 @@ const NotificationPage = () => {
   const navigation = useNavigation<NavigationType>();
 
   useEffect(() => {
-    // Request permissions when component mounts
     (async () => {
       const { status } = await Notifications.requestPermissionsAsync();
       if (status !== 'granted') {
@@ -34,7 +31,6 @@ const NotificationPage = () => {
 
   const handleEnableNotifications = async () => {
     try {
-      // Check current permission status
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
       
@@ -44,7 +40,6 @@ const NotificationPage = () => {
       }
       
       if (finalStatus === 'granted') {
-        // Show notification
         await Notifications.scheduleNotificationAsync({
           content: {
             title: 'Ура!',
@@ -52,16 +47,14 @@ const NotificationPage = () => {
             sound: true,
             priority: Notifications.AndroidNotificationPriority.HIGH,
           },
-          trigger: null, // Show immediately
+          trigger: null, 
         });
       } else {
         console.log('Permission not granted');
       }
-      // Перенаправляем на страницу Hello
       navigation.navigate('Hello');
     } catch (error) {
       console.log('Error:', error);
-      // Перенаправляем даже в случае ошибки
       navigation.navigate('Hello');
     }
   };

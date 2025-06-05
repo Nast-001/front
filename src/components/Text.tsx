@@ -5,7 +5,6 @@ import { globalStyles } from '../theme/globalStyles';
 interface CustomTextProps extends TextProps {
   italic?: boolean;
 }
-//sd
 export const Text: React.FC<CustomTextProps> = ({ style, italic, ...props }) => {
   return (
     <RNText

@@ -269,7 +269,6 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
     },
   };
 
-  // Добавляем серые даты до 8 апреля
   for (let i = 1; i <= 7; i++) {
     const date = `2025-04-${String(i).padStart(2, '0')}`;
     markedDates[date] = {
@@ -278,7 +277,6 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
     };
   }
 
-  // Добавляем серую дату для 9 апреля
   markedDates['2025-04-09'] = {
     disabled: true,
     disableTouchEvent: false,

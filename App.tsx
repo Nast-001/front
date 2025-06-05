@@ -36,13 +36,11 @@ import RestrictionsScreen from './registration/restrictions.tsx';
 import SkillScreen from './registration/skill.tsx';
 import TimeScreen from './registration/time.tsx';
 
-// Игнорируем предупреждения о react-native-video
 LogBox.ignoreLogs([
   'ViewPropTypes will be removed',
   'ColorPropType will be removed',
 ]);
 
-// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 const Stack = createStackNavigator<RootStackParamList>();

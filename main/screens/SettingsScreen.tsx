@@ -13,7 +13,6 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
   };
 
   const confirmDelete = () => {
-    // Здесь будет логика удаления аккаунта
     setShowDeleteModal(false);
   };
 
@@ -78,7 +77,6 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Модальное окно подтверждения удаления */}
       <Modal
         visible={showDeleteModal}
         transparent
