@@ -13,155 +13,251 @@ type Category = {
   url: string;
 };
 
-const DAILY_WORKOUTS = [
-  {
-    id: '1',
-    title: 'РАСТЯЖКА ДЛЯ\nТЕЛА И УМА',
-    image: require('../../assets/current_workout.png'),
-    duration: '15 мин',
-    calories: 150,
-    exercises: [
-      { 
-        name: 'Наклоны вперед', 
-        duration: 60,
-        videoUrl: 'https://example.com/video1.mp4'
-      },
-      { 
-        name: 'Поза бабочки', 
-        duration: 90,
-        videoUrl: 'https://example.com/video2.mp4'
-      },
-      { 
-        name: 'Скручивания позвоночника', 
-        duration: 60,
-        videoUrl: 'https://example.com/video3.mp4'
-      },
-    ]
+type Workout = {
+  id: string;
+  title: string;
+  image: any;
+  duration: string;
+  calories: number;
+  exercises: {
+    name: string;
+    duration: number;
+    videoUrl: string;
+  }[];
+};
+
+const createPersonalizedWorkouts = (
+  userPreferences: {
+    workout_duration: 'short' | 'medium' | 'long';
+    experience: 'beginner' | 'intermediate' | 'advanced' | 'expert' | 'pro';
+    flexibility: 'very_poor' | 'poor' | 'average' | 'good' | 'excellent';
+    breathing: 'good' | 'middle' | 'bad';
+    goals: string[];
+    body_parts: string[];
+    limitations: string[];
   },
-  {
-    id: '2',
-    title: 'СИЛОВАЯ ЙОГА',
-    image: require('../../assets/current_workout.png'),
-    duration: '30 мин',
-    calories: 180,
-    exercises: [
-      { 
-        name: 'Поза собаки', 
-        duration: 60,
-        videoUrl: 'https://example.com/video4.mp4'
-      },
-      { 
-        name: 'Поза кошки', 
-        duration: 60,
-        videoUrl: 'https://example.com/video5.mp4'
-      },
-      { 
-        name: 'Поза воина', 
-        duration: 90,
-        videoUrl: 'https://example.com/video6.mp4'
-      },
-    ]
-  },
-  {
-    id: '3',
-    title: 'ВОССТАНАВЛИВАЮЩАЯ ЙОГА',
-    image: require('../../assets/current_workout.png'),
-    duration: '45 мин',
-    calories: 250,
-    exercises: [
-      { 
-        name: 'Приседания', 
-        duration: 60,
-        videoUrl: 'https://rutube.ru/video/15ad6bb57e98b55e3a3d011a9bbbda7d/?r=wd'
-      },
-      { 
-        name: 'Отжимания', 
-        duration: 45,
-        videoUrl: 'https://rutube.ru/video/15ad6bb57e98b55e3a3d011a9bbbda7d/?r=wd'
-      },
-      { 
-        name: 'Планка', 
-        duration: 60,
-        videoUrl: 'https://rutube.ru/video/15ad6bb57e98b55e3a3d011a9bbbda7d/?r=wd'
-      },
-    ]
-  },
-];
+  availableWorkouts: Workout[]
+) => {
+
+  const durationMap = {
+    short: { min: 10, max: 20 },
+    medium: { min: 20, max: 40 },
+    long: { min: 40, max: 60 }
+  };
+
+  const intensityMap = {
+    beginner: 1,
+    intermediate: 2,
+    advanced: 3,
+    expert: 4,
+    pro: 5
+  };
+
+  const durationFiltered = availableWorkouts.filter(workout => {
+    const duration = parseInt(workout.duration);
+    const { min, max } = durationMap[userPreferences.workout_duration];
+    return duration >= min && duration <= max;
+  });
+
+
+  const contraindicationsFiltered = durationFiltered.filter(workout => {
+    return !workout.exercises.some(exercise =>
+      userPreferences.limitations.some(limitation =>
+        exercise.name.toLowerCase().includes(limitation.toLowerCase())
+      )
+    );
+  });
+
+
+  const goalsFiltered = contraindicationsFiltered.filter(workout => {
+    return userPreferences.goals.some(goal =>
+      workout.title.toLowerCase().includes(goal.toLowerCase())
+    ) || userPreferences.body_parts.some(part =>
+      workout.title.toLowerCase().includes(part.toLowerCase())
+    );
+  });
+
+
+  const sortedByExperience = goalsFiltered.sort((a, b) => {
+    const aIntensity = a.exercises.reduce((acc, ex) => acc + ex.duration, 0) / a.exercises.length;
+    const bIntensity = b.exercises.reduce((acc, ex) => acc + ex.duration, 0) / b.exercises.length;
+
+    const userIntensity = intensityMap[userPreferences.experience];
+    const aDiff = Math.abs(aIntensity - userIntensity);
+    const bDiff = Math.abs(bIntensity - userIntensity);
+
+    return aDiff - bDiff;
+  });
+
+  const flexibilityAdjusted = sortedByExperience.map(workout => ({
+    ...workout,
+    exercises: workout.exercises.map(exercise => ({
+      ...exercise,
+      duration: userPreferences.flexibility === 'very_poor' || userPreferences.flexibility === 'poor'
+        ? Math.floor(exercise.duration * 0.7)
+        : userPreferences.flexibility === 'excellent'
+          ? Math.floor(exercise.duration * 1.2)
+          : exercise.duration
+    }))
+  }));
+
+  const breathingAdjusted = flexibilityAdjusted.map(workout => ({
+    ...workout,
+    exercises: workout.exercises.map(exercise => ({
+      ...exercise,
+      duration: userPreferences.breathing === 'bad'
+        ? Math.floor(exercise.duration * 0.8)
+        : userPreferences.breathing === 'good'
+          ? Math.floor(exercise.duration * 1.1)
+          : exercise.duration
+    }))
+  }));
+
+  return breathingAdjusted;
+};
 
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState('Настя');
-  const [currentWorkout, setCurrentWorkout] = useState(DAILY_WORKOUTS[0]);
+  const [currentWorkout, setCurrentWorkout] = useState<Workout | null>(null);
   const [currentDay, setCurrentDay] = useState(1);
+  const [userPreferences, setUserPreferences] = useState<{
+    workout_duration: 'short' | 'medium' | 'long';
+    experience: 'beginner' | 'intermediate' | 'advanced' | 'expert' | 'pro';
+    flexibility: 'very_poor' | 'poor' | 'average' | 'good' | 'excellent';
+    breathing: 'good' | 'middle' | 'bad';
+    goals: string[];
+    body_parts: string[];
+    limitations: string[];
+  }>({
+    workout_duration: 'medium',
+    experience: 'beginner',
+    flexibility: 'average',
+    breathing: 'middle',
+    goals: [],
+    body_parts: [],
+    limitations: []
+  });
 
   useEffect(() => {
     fetchCategories();
-    // Выбираем тренировку для первого дня
-    setCurrentWorkout(DAILY_WORKOUTS[0]);
+    fetchUserPreferences();
   }, []);
+
+  const fetchUserPreferences = async () => {
+    try {
+
+      const preferences = {
+        workout_duration: 'medium' as const,
+        experience: 'beginner' as const,
+        flexibility: 'average' as const,
+        breathing: 'middle' as const,
+        goals: ['растяжка', 'гибкость'],
+        body_parts: ['спина', 'ноги'],
+        limitations: []
+      };
+      setUserPreferences(preferences);
+
+      const availableWorkouts = await fetchAvailableWorkouts();
+
+      const personalizedWorkouts = createPersonalizedWorkouts(preferences, availableWorkouts);
+
+      if (personalizedWorkouts.length > 0) {
+        setCurrentWorkout(personalizedWorkouts[0]);
+      }
+    } catch (error) {
+      console.error('Ошибка при загрузке предпочтений:', error);
+    }
+  };
+
+  const fetchAvailableWorkouts = async (): Promise<Workout[]> => {
+    try {
+      const response = await fetch('http://192.168.0.176:8000/api/workouts/');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+
+      return data.map((workout: any) => ({
+        id: workout.id,
+        title: workout.title,
+        image: require('../../assets/current_workout.png'),
+        duration: `${workout.duration} мин`,
+        calories: workout.calories,
+        exercises: workout.exercises.map((exercise: any) => ({
+          name: exercise.name,
+          duration: exercise.duration,
+          videoUrl: exercise.video_url
+        }))
+      }));
+    } catch (error) {
+      console.error('Ошибка при загрузке тренировок:', error);
+      return [];
+    }
+  };
 
   const fetchCategories = async () => {
     try {
       setCategories([
-        { 
-          id: '1', 
-          title: 'ОФИСНАЯ ЙОГА', 
+        {
+          id: '1',
+          title: 'ОФИСНАЯ ЙОГА',
           image: require('../../assets/office.png'),
           url: 'office_yoga'
         },
-        { 
-          id: '2', 
-          title: 'ЗДОРОВАЯ СПИНА', 
+        {
+          id: '2',
+          title: 'ЗДОРОВАЯ СПИНА',
           image: require('../../assets/back.png'),
           url: 'healthy_back'
         },
-        { 
-          id: '3', 
-          title: 'СИЛОВАЯ ЙОГА', 
+        {
+          id: '3',
+          title: 'СИЛОВАЯ ЙОГА',
           image: require('../../assets/power.png'),
           url: 'power_yoga'
         },
-        { 
-          id: '4', 
-          title: 'РАСТЯЖКА и ГИБКОСТЬ', 
+        {
+          id: '4',
+          title: 'РАСТЯЖКА и ГИБКОСТЬ',
           image: require('../../assets/stretch.png'),
           url: 'stretching'
         },
-        { 
-          id: '5', 
-          title: 'РАСТЯЖКА ДЛЯ\nТЕЛА И УМА', 
+        {
+          id: '5',
+          title: 'РАСТЯЖКА ДЛЯ\nТЕЛА И УМА',
           image: require('../../assets/beginner.png'),
           url: 'beginners'
         },
-        { 
-          id: '6', 
-          title: 'ВОССТАНАВЛИВАЮЩАЯ ЙОГА', 
+        {
+          id: '6',
+          title: 'ВОССТАНАВЛИВАЮЩАЯ ЙОГА',
           image: require('../../assets/recovery.png'),
           url: 'restorative'
         },
-        { 
-          id: '7', 
-          title: 'МЕДИТАТИВНАЯ ЙОГА', 
+        {
+          id: '7',
+          title: 'МЕДИТАТИВНАЯ ЙОГА',
           image: require('../../assets/meditation.png'),
           url: 'meditative'
         },
-        { 
-          id: '8', 
-          title: 'ЙОГА ДЛЯ УЛУЧШЕНИЯ СНА', 
+        {
+          id: '8',
+          title: 'ЙОГА ДЛЯ УЛУЧШЕНИЯ СНА',
           image: require('../../assets/sleep.png'),
           url: 'sleep'
         },
-        { 
-          id: '9', 
-          title: 'ДИНАМИЧНАЯ ЙОГА', 
+        {
+          id: '9',
+          title: 'ДИНАМИЧНАЯ ЙОГА',
           image: require('../../assets/dinamic.png'),
           url: 'dynamic'
         },
-        { 
-          id: '10', 
-          title: 'КЛАССИЧЕСКАЯ ХАТХА ЙОГА', 
+        {
+          id: '10',
+          title: 'КЛАССИЧЕСКАЯ ХАТХА ЙОГА',
           image: require('../../assets/yoga.png'),
           url: 'classical'
         },
@@ -185,7 +281,7 @@ const HomeScreen = () => {
         statusText: response.statusText,
         headers: Object.fromEntries(response.headers.entries())
       });
-      
+
       if (!response.ok) {
         let errorMessage = '';
         try {
@@ -213,40 +309,7 @@ const HomeScreen = () => {
       console.log('Parsing response data...');
       const data = await response.json();
       console.log('Received lessons data:', JSON.stringify(data, null, 2));
-      
-      // Проверяем каждый урок
-      data.forEach((lesson: any, index: number) => {
-        console.log(`Lesson ${index + 1}:`, {
-          id: lesson.id,
-          title: lesson.title,
-          video_file: lesson.video_file,
-          preview_image: lesson.preview_image
-        });
-        
-        // Проверяем доступность видео
-        fetch(lesson.video_file)
-          .then(response => {
-            console.log(`Video ${index + 1} status:`, response.status);
-            console.log(`Video ${index + 1} headers:`, response.headers);
-          })
-          .catch(error => {
-            console.error(`Error checking video ${index + 1}:`, error);
-          });
 
-        // Проверяем доступность превью
-        const encodedPreviewUrl = encodeURI(lesson.preview_image);
-        fetch(encodedPreviewUrl)
-          .then(response => {
-            console.log(`Preview ${index + 1} status:`, response.status);
-            console.log(`Preview ${index + 1} headers:`, response.headers);
-            console.log(`Preview ${index + 1} URL:`, encodedPreviewUrl);
-          })
-          .catch(error => {
-            console.error(`Error checking preview ${index + 1}:`, error);
-            console.error(`Failed URL:`, encodedPreviewUrl);
-          });
-      });
-      
       navigation.navigate('CategoryScreen', {
         categoryId: category.url,
         categoryTitle: category.title,
@@ -254,7 +317,7 @@ const HomeScreen = () => {
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
-      
+
       console.error('Ошибка сети:', {
         name: error instanceof Error ? error.name : 'Unknown',
         message: errorMessage,
@@ -272,20 +335,18 @@ const HomeScreen = () => {
   const handlePreviousDay = () => {
     if (currentDay > 1) {
       setCurrentDay(prev => prev - 1);
-      // При переходе на предыдущий день меняем тренировку
-      setCurrentWorkout(DAILY_WORKOUTS[(currentDay - 2) % DAILY_WORKOUTS.length]);
     }
   };
 
   const handleNextDay = () => {
     if (currentDay < 30) {
       setCurrentDay(prev => prev + 1);
-      // При переходе на следующий день меняем тренировку
-      setCurrentWorkout(DAILY_WORKOUTS[currentDay % DAILY_WORKOUTS.length]);
     }
   };
 
   const handleWorkoutPress = () => {
+    if (!currentWorkout) return;
+
     if (currentDay > 1) {
       Alert.alert(
         'Урок недоступен',
@@ -294,59 +355,64 @@ const HomeScreen = () => {
       );
       return;
     }
-    navigation.navigate('WorkoutDetails', { workout: currentWorkout });
+    // @ts-ignore - Navigation type needs to be updated in navigationTypes.ts
+    navigation.navigate('WorkoutDetails', { workoutId: currentWorkout.id });
   };
 
-  const renderCurrentWorkout = () => (
-    <View>
-      <View style={styles.topBar}>
-        <View style={styles.dayContainer}>
-          <TouchableOpacity onPress={handlePreviousDay}>
-            <Text style={[styles.arrow, currentDay === 1 && styles.disabledArrow]}>◀</Text>
-          </TouchableOpacity>
-          <Text style={styles.dayText}>ДЕНЬ {currentDay}</Text>
-          <TouchableOpacity onPress={handleNextDay}>
-            <Text style={[styles.arrow, currentDay === 30 && styles.disabledArrow]}>▶</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.planContainer}>
-          <Text style={styles.planText}>твой план</Text>
-        </View>
-      </View>
-      <TouchableOpacity 
-        style={styles.currentWorkoutCard}
-        onPress={handleWorkoutPress}
-      >
-        <ImageBackground
-          source={currentWorkout.image}
-          style={styles.currentWorkoutImage}
-          imageStyle={styles.currentWorkoutImageStyle}
-          resizeMode="cover"
-        >
-          <View style={[styles.currentWorkoutContent, styles.overlay]}>
-            <Text style={styles.workoutTitle}>{currentWorkout.title}</Text>
-            <View style={styles.workoutInfoContainer}>
-              <View style={styles.workoutInfoItem}>
-                <Text style={styles.workoutInfoText}>{currentWorkout.duration}</Text>
-              </View>
-              <View style={styles.workoutInfoItem}>
-                <Text style={styles.workoutInfoText}>{currentWorkout.calories} ккал</Text>
-              </View>
-            </View>
-            <TouchableOpacity 
-              style={styles.playButton}
-              onPress={handleWorkoutPress}
-            >
-              <Text style={styles.playButtonText}>▶</Text>
+  const renderCurrentWorkout = () => {
+    if (!currentWorkout) return null;
+
+    return (
+      <View>
+        <View style={styles.topBar}>
+          <View style={styles.dayContainer}>
+            <TouchableOpacity onPress={handlePreviousDay}>
+              <Text style={[styles.arrow, currentDay === 1 && styles.disabledArrow]}>◀</Text>
+            </TouchableOpacity>
+            <Text style={styles.dayText}>ДЕНЬ {currentDay}</Text>
+            <TouchableOpacity onPress={handleNextDay}>
+              <Text style={[styles.arrow, currentDay === 30 && styles.disabledArrow]}>▶</Text>
             </TouchableOpacity>
           </View>
-        </ImageBackground>
-      </TouchableOpacity>
-    </View>
-  );
+          <View style={styles.planContainer}>
+            <Text style={styles.planText}>твой план</Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={styles.currentWorkoutCard}
+          onPress={handleWorkoutPress}
+        >
+          <ImageBackground
+            source={currentWorkout.image}
+            style={styles.currentWorkoutImage}
+            imageStyle={styles.currentWorkoutImageStyle}
+            resizeMode="cover"
+          >
+            <View style={[styles.currentWorkoutContent, styles.overlay]}>
+              <Text style={styles.workoutTitle}>{currentWorkout.title}</Text>
+              <View style={styles.workoutInfoContainer}>
+                <View style={styles.workoutInfoItem}>
+                  <Text style={styles.workoutInfoText}>{currentWorkout.duration}</Text>
+                </View>
+                <View style={styles.workoutInfoItem}>
+                  <Text style={styles.workoutInfoText}>{currentWorkout.calories} ккал</Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                style={styles.playButton}
+                onPress={handleWorkoutPress}
+              >
+                <Text style={styles.playButtonText}>▶</Text>
+              </TouchableOpacity>
+            </View>
+          </ImageBackground>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   const renderCategoryItem = ({ item }: { item: Category }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.categoryCard}
       onPress={() => handleCategoryPress(item)}
     >
@@ -562,4 +628,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen; 
+export default HomeScreen;

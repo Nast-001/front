@@ -14,11 +14,9 @@ const LastLesson = ({ navigation }: { navigation: any }) => {
   // Функция для обработки URL изображений
   const processImageUrl = (url: string) => {
     if (!url) return '';
-    // Если URL уже полный, возвращаем его как есть
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    // Иначе добавляем базовый URL бэкенда
     return `${BASE_URL}${url}`;
   };
 
@@ -70,16 +68,13 @@ const LastLesson = ({ navigation }: { navigation: any }) => {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
-    // Проверяем, является ли дата сегодняшней
     if (date.toDateString() === today.toDateString()) {
       return 'Сегодня';
     }
-    // Проверяем, является ли дата вчерашней
     if (date.toDateString() === yesterday.toDateString()) {
       return 'Вчера';
     }
 
-    // Для остальных дат используем формат "день месяц год"
     return date.toLocaleDateString('ru-RU', {
       day: 'numeric',
       month: 'long',
@@ -93,7 +88,7 @@ const LastLesson = ({ navigation }: { navigation: any }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={24} color="#2d4150" />
         </TouchableOpacity>
-        <CustomText variant="bold" style={styles.headerTitle}>Последнее</CustomText>  
+        <CustomText variant="bold" style={styles.headerTitle}>Последнее</CustomText>
         {completedLessons.length > 0 && (
           <TouchableOpacity onPress={handleClearHistory}>
             <Feather name="trash-2" size={24} color="#2d4150" />
@@ -112,10 +107,10 @@ const LastLesson = ({ navigation }: { navigation: any }) => {
           </View>
         ) : (
           completedLessons.map((lesson) => (
-            <TouchableOpacity 
-              key={lesson.id} 
+            <TouchableOpacity
+              key={lesson.id}
               style={styles.lessonCard}
-              onPress={() => navigation.navigate('LessonScreen', { 
+              onPress={() => navigation.navigate('LessonScreen', {
                 lesson: {
                   ...lesson,
                   video_file: lesson.video_file
@@ -261,4 +256,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LastLesson; 
+export default LastLesson;

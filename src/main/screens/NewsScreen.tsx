@@ -32,11 +32,9 @@ const NewsScreen = () => {
   // Функция для обработки URL изображений
   const processImageUrl = (url: string) => {
     if (!url) return '';
-    // Если URL уже полный, возвращаем его как есть
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    // Иначе добавляем базовый URL бэкенда
     return `http://192.168.0.176:8000${url}`;
   };
 
@@ -44,10 +42,9 @@ const NewsScreen = () => {
     try {
       const response = await fetch('http://192.168.0.176:8000/api/news/');
       const newData = await response.json();
-      
+
       // Сравниваем новые данные со старыми
       setNews(prevNews => {
-        // Если это первая загрузка, просто устанавливаем данные
         if (prevNews.length === 0) {
           return newData;
         }
@@ -72,19 +69,15 @@ const NewsScreen = () => {
   };
 
   useEffect(() => {
-    // Первоначальная загрузка
     fetchNews();
 
-    // Установка интервала для обновления
-    const intervalId = setInterval(fetchNews, 5000); // Обновление каждые 30 секунд
-
-    // Очистка интервала при размонтировании компонента
+    const intervalId = setInterval(fetchNews, 5000);
     return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
     if (activeFilter) {
-      const filtered = news.filter(item => 
+      const filtered = news.filter(item =>
         item.tags.some(tag => tag.name.toLowerCase() === FILTERS.find(f => f.id === activeFilter)?.name.toLowerCase())
       );
       setFilteredNews(filtered);
@@ -102,7 +95,7 @@ const NewsScreen = () => {
         style={styles.newsCard}
         onPress={() => navigation.navigate('NewsDetail', { newsId: item.id })}
       >
-        <Image 
+        <Image
           source={{ uri: imageUrl }}
           style={styles.newsImage}
           onError={(e) => {
@@ -324,4 +317,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NewsScreen; 
+export default NewsScreen;

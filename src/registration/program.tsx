@@ -44,10 +44,8 @@ const GoalFormationScreen = ({ navigation }: Props) => {
     const sendDataAndNavigate = async () => {
       try {
         setIsSendingData(true);
-        // Отправляем данные на бэкенд
         await sendRegistrationData();
-        
-        // Переходим на страницу уведомлений
+
         navigation.navigate('Notification', {});
       } catch (error: any) {
         console.error('Ошибка при отправке данных:', error);
@@ -72,7 +70,7 @@ const GoalFormationScreen = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Подбираем индивидуальную программу для вас</Text>
-      
+
       <View style={styles.imageContainer}>
         <Animated.Image
           style={[
@@ -91,9 +89,9 @@ const GoalFormationScreen = ({ navigation }: Props) => {
           </View>
         )}
       </View>
-      
+
       <Text style={styles.text_subtitle}>Стать лучшей версией себя</Text>
-      
+
       {(isLoading || isSendingData) && (
         <View style={styles.loadingIndicator}>
           <ActivityIndicator size={12} color="#4CAF50" />

@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from './navigationTypes';
 
-// Import body images
 const bodyImage = require('../assets/body.png');
 const allImage = require('../assets/all.png');
 const neckImage = require('../assets/neck.png');
@@ -27,7 +26,7 @@ const BodyAreasScreen = ({ navigation, route }: Props) => {
   const [primaryArea, setPrimaryArea] = useState<string | null>(null);
   const [secondaryAreas, setSecondaryAreas] = useState<string[]>([]);
   const [currentBodyImage, setCurrentBodyImage] = useState(bodyImage);
-  
+
   const formData = route.params?.formData || {};
   const gender = route.params?.gender;
   const selectedGoals = route.params?.selectedGoals || [];
@@ -50,21 +49,20 @@ const BodyAreasScreen = ({ navigation, route }: Props) => {
       setSecondaryAreas([]);
     }
   };
-  
+
   const toggleSecondaryArea = (area: string) => {
     if (primaryArea === "Всё тело") return;
-    
+
     if (area === "Всё тело") {
       setPrimaryArea("Всё тело");
       setSecondaryAreas([]);
       setCurrentBodyImage(allImage);
     } else {
       setSecondaryAreas(prev => {
-        const newAreas = prev.includes(area) 
-          ? prev.filter(item => item !== area) 
+        const newAreas = prev.includes(area)
+          ? prev.filter(item => item !== area)
           : [...prev, area];
-        
-        // Update body image based on selected areas
+
         if (newAreas.length === 0) {
           setCurrentBodyImage(bodyImage);
         } else if (area === "Шея и плечи") {
@@ -80,7 +78,7 @@ const BodyAreasScreen = ({ navigation, route }: Props) => {
         } else if (area === "Пресс и кор") {
           setCurrentBodyImage(pressImage);
         }
-        
+
         return newAreas;
       });
     }
@@ -94,11 +92,11 @@ const BodyAreasScreen = ({ navigation, route }: Props) => {
   };
 
   const handleContinue = () => {
-    navigation.navigate('Motivation', { 
+    navigation.navigate('Motivation', {
       ...formData,
       gender,
       selectedGoals,
-      body_parts: primaryArea ? [primaryArea] : secondaryAreas 
+      body_parts: primaryArea ? [primaryArea] : secondaryAreas
     });
   };
 
@@ -116,30 +114,30 @@ const BodyAreasScreen = ({ navigation, route }: Props) => {
 
       <Text style={styles.title}>Какие области тела хотите проработать?</Text>
       <Text style={styles.subtitle}>
-        {primaryArea 
+        {primaryArea
           ? `Основная зона: ${primaryArea}`
-          : secondaryAreas.length > 0 
+          : secondaryAreas.length > 0
             ? `Выбрано зон: ${secondaryAreas.length}`
             : "Выберите зоны для работы"}
       </Text>
 
       <View style={styles.contentContainer}>
-        <Image 
-          source={currentBodyImage} 
+        <Image
+          source={currentBodyImage}
           style={styles.bodyImage}
           resizeMode="contain"
         />
-       
+
         <View style={styles.checkboxContainer}>
           {bodyAreas.map((area, index) => (
             <View key={index} style={[
               styles.checkboxWrapper,
               isAreaSelected(area) && { backgroundColor: '#87D0B2' }
             ]}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.touchableArea}
-                onPress={() => 
-                  primaryArea 
+                onPress={() =>
+                  primaryArea
                     ? togglePrimaryArea(area)
                     : toggleSecondaryArea(area)
                 }
@@ -213,7 +211,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginBottom: 30,
     alignItems: 'center',
-    justifyContent: 'space-between', 
+    justifyContent: 'space-between',
   },
   bodyImage: {
     width: '40%',
@@ -276,7 +274,7 @@ const styles = StyleSheet.create({
     width: '100%',
     fontFamily: 'Lora',
   },
-  
+
 });
 
 export default BodyAreasScreen;

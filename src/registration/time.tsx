@@ -11,10 +11,10 @@ type TimeScreenRouteProp = RouteProp<RootStackParamList, 'Time'>;
 const TimeScreen = () => {
   const [selectedTime, setSelectedTime] = useState<'short' | 'medium' | 'long' | ''>('');
   const [loading, setLoading] = useState(false);
-  
+
   const navigation = useNavigation<TimeScreenNavigationProp>();
   const route = useRoute<TimeScreenRouteProp>();
-  
+
   const formData = route.params?.formData || { email: '', password: '', password2: '' };
   const gender = route.params?.gender;
   const name = route.params?.name;
@@ -32,7 +32,7 @@ const TimeScreen = () => {
     if (selectedTime) {
       try {
         setLoading(true);
-        
+
         // Подготавливаем данные для сохранения локально
         if (!name) {
           Alert.alert('Ошибка', 'Имя пользователя обязательно');
@@ -49,13 +49,11 @@ const TimeScreen = () => {
           height: height && !isNaN(Number(height)) ? parseInt(height) : undefined,
           weight: weight && !isNaN(Number(weight)) ? parseInt(weight) : undefined,
           workout_duration: selectedTime,
-          // Другие поля будут добавлены позже
         };
-        
+
         // Сохраняем данные пользователя локально
         await saveUserData(userData);
-        
-        // Переходим на следующий экран без отправки данных на сервер
+
         navigation.navigate('GoalFormation', {
           ...formData,
           gender,
@@ -214,4 +212,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TimeScreen; 
+export default TimeScreen;

@@ -13,7 +13,6 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
   };
 
   const confirmDelete = () => {
-    // Здесь будет логика удаления аккаунта
     setShowDeleteModal(false);
   };
 
@@ -29,7 +28,7 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
 
       <View style={styles.content}>
         {/* Изменение профиля */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingItem}
           onPress={() => navigation.navigate('EditProfile')}
         >
@@ -46,7 +45,7 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
             <Feather name="bell" size={24} color="#2d4150" />
             <Text style={styles.settingText}>Уведомления</Text>
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.toggle, notificationsEnabled && styles.toggleActive]}
             onPress={toggleNotifications}
           >
@@ -55,7 +54,7 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
         </View>
 
         {/* Поддержка */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingItem}
           onPress={() => Linking.openURL('https://t.me/ans_sergeeva')}
         >
@@ -67,7 +66,7 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
         </TouchableOpacity>
 
         {/* Удаление аккаунта */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.settingItem, styles.deleteButton]}
           onPress={() => setShowDeleteModal(true)}
         >
@@ -91,13 +90,13 @@ const SettingsScreen = ({ navigation }: { navigation: any }) => {
               Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя отменить.
             </Text>
             <View style={styles.modalButtons}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => setShowDeleteModal(false)}
               >
                 <Text style={styles.cancelButtonText}>Нет</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.modalButton, styles.confirmDeleteButton]}
                 onPress={confirmDelete}
               >
@@ -237,4 +236,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingsScreen; 
+export default SettingsScreen;

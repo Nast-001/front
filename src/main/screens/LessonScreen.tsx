@@ -34,7 +34,6 @@ const LessonScreen = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const videoRef = useRef<Video>(null);
 
-  // Handle hardware back button
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (navigation.isFocused() && !route.params?.fromHistory) {
@@ -54,29 +53,26 @@ const LessonScreen = () => {
       setIsLoading(false);
       return;
     }
-    
+
     const baseUrl = 'http://192.168.0.176:8000';
     const streamUrl = `${baseUrl}/api/lessons/stream/${encodeURIComponent(videoFileName)}`;
     setVideoUrl(streamUrl);
-    
+
     const checkVideo = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        
-        // First check with HEAD request
+
         const headResponse = await fetch(streamUrl, { method: 'HEAD' });
         if (!headResponse.ok) {
           throw new Error(`Video unavailable. Status: ${headResponse.status}`);
         }
-        
-        // Then verify content type
+
         const contentType = headResponse.headers.get('content-type');
         if (!contentType?.startsWith('video/')) {
           throw new Error('Invalid video content type');
         }
-        
-        // If we got here, video should be available
+
         setIsLoading(false);
       } catch (error) {
         console.error('Error checking video:', error);
@@ -84,11 +80,10 @@ const LessonScreen = () => {
         setIsLoading(false);
       }
     };
-    
+
     checkVideo();
   }, [lesson.video_file]);
 
-  // Проверяем, является ли урок избранным
   useEffect(() => {
     const checkFavorite = async () => {
       const favorite = await isLessonFavorite(lesson.id);
@@ -97,7 +92,6 @@ const LessonScreen = () => {
     checkFavorite();
   }, [lesson.id]);
 
-  // Пауза видео при потере фокуса
   useFocusEffect(() => {
     return () => {
       if (videoRef.current) {
@@ -116,7 +110,7 @@ const LessonScreen = () => {
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return hours > 0 
+    return hours > 0
       ? `${hours} ч ${mins} мин`
       : `${mins} мин`;
   };
@@ -132,7 +126,7 @@ const LessonScreen = () => {
       }
     }
     setShowExitModal(false);
-    
+
     if (route.params?.fromHistory) {
       navigation.navigate('LastLesson');
     } else {
@@ -156,7 +150,7 @@ const LessonScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => {
             if (route.params?.fromHistory) {
@@ -168,15 +162,15 @@ const LessonScreen = () => {
         >
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.favoriteButton}
           onPress={toggleFavorite}
         >
-          <Ionicons 
-            name={isFavorite ? "heart" : "heart-outline"} 
-            size={24} 
-            color={isFavorite ? "#ff6b6b" : "#333"} 
+          <Ionicons
+            name={isFavorite ? "heart" : "heart-outline"}
+            size={24}
+            color={isFavorite ? "#ff6b6b" : "#333"}
           />
         </TouchableOpacity>
       </View>
@@ -188,7 +182,7 @@ const LessonScreen = () => {
             <Text style={styles.loadingText}>Загрузка видео...</Text>
           </View>
         )}
-        
+
         {error ? (
           <View style={styles.errorContainer}>
             <Ionicons name="alert-circle" size={48} color="#ff6b6b" />
@@ -213,7 +207,7 @@ const LessonScreen = () => {
 
       <View style={styles.contentContainer}>
         <Text style={styles.title}>{lesson.title}</Text>
-        
+
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
             <Ionicons name="time-outline" size={20} color="#666" />
@@ -329,4 +323,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LessonScreen; 
+export default LessonScreen;

@@ -17,12 +17,10 @@ export interface SavedLesson {
 export const saveLessonToHistory = async (lesson: Lesson): Promise<void> => {
   try {
     console.log('Saving lesson to history:', lesson);
-    
-    // Get current history
+
     const historyJson = await AsyncStorage.getItem(STORAGE_KEY);
     console.log('Current history from storage:', historyJson);
-    
-    // Parse or initialize history
+
     let history: SavedLesson[] = [];
     if (historyJson) {
       try {
@@ -33,8 +31,7 @@ export const saveLessonToHistory = async (lesson: Lesson): Promise<void> => {
         history = [];
       }
     }
-    
-    // Create new lesson with completion date
+
     const newLesson: SavedLesson = {
       id: lesson.id,
       title: lesson.title,
@@ -46,24 +43,21 @@ export const saveLessonToHistory = async (lesson: Lesson): Promise<void> => {
       video_file: lesson.video_file,
     };
     console.log('New lesson to save:', newLesson);
-    
-    // Add to beginning of history
+
     const newHistory = [newLesson, ...history];
     console.log('New history to save:', newHistory);
-    
-    // Save to storage
+
     const newHistoryJson = JSON.stringify(newHistory);
     await AsyncStorage.setItem(STORAGE_KEY, newHistoryJson);
-    
-    // Verify save
+
     const verifyJson = await AsyncStorage.getItem(STORAGE_KEY);
     const verifyHistory = verifyJson ? JSON.parse(verifyJson) : [];
     console.log('Verified history after save:', verifyHistory);
-    
+
     if (verifyHistory.length !== newHistory.length) {
       throw new Error('History verification failed: saved length does not match');
     }
-    
+
     console.log('Lesson saved and verified successfully');
   } catch (error) {
     console.error('Error saving lesson to history:', error);
@@ -96,4 +90,4 @@ export const clearLessonHistory = async (): Promise<void> => {
     console.error('Error clearing lesson history:', error);
     throw error;
   }
-}; 
+};

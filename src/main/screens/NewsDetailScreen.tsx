@@ -30,11 +30,9 @@ const NewsDetailScreen = () => {
   // Функция для обработки URL изображений
   const processImageUrl = (url: string) => {
     if (!url) return '';
-    // Если URL уже полный, возвращаем его как есть
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    // Иначе добавляем базовый URL бэкенда
     return `http://192.168.0.176:8000${url}`;
   };
 
@@ -59,13 +57,13 @@ const NewsDetailScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <MaterialCommunityIcons name="arrow-left" size={24} color="#fff" />
         </TouchableOpacity>
-        <Image 
+        <Image
           source={{ uri: imageUrl }}
           style={styles.newsImage}
           onError={(e) => {
@@ -88,7 +86,7 @@ const NewsDetailScreen = () => {
       <View style={styles.content}>
         <Text style={styles.heading}>{newsDetail.first_heading}</Text>
         <Text style={styles.contentText}>{newsDetail.first_content}</Text>
-        
+
         <Text style={styles.heading}>{newsDetail.second_heading}</Text>
         <Text style={styles.contentText}>{newsDetail.second_content}</Text>
       </View>
@@ -173,4 +171,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NewsDetailScreen; 
+export default NewsDetailScreen;
